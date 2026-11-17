@@ -136,6 +136,31 @@ nav button span{font-size:18px}
 .tiles{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-bottom:6px}
 .tile{width:44px;height:48px;border-radius:10px;border:2px solid var(--accent2);background:#1f3550;font-size:22px;font-weight:800}
 .tile:disabled{opacity:.2}
+.hl{color:var(--warn)}
+.holes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.hole{aspect-ratio:1/1;border-radius:50%;border:3px solid #2b3d55;background:radial-gradient(circle at 50% 70%,#05080c,#16212f);padding:6px;display:grid;place-items:center;overflow:hidden;transition:.15s}
+.hole.hit{background:#173b2b;border-color:var(--good)}.hole.bad{background:#3f1d22;border-color:var(--bad)}
+.mole{animation:pop .3s;display:flex;flex-direction:column;align-items:center}
+.mole svg{width:100%;height:auto}.mole small{font-size:10px;font-weight:700}
+.battery{position:relative;height:34px;border:3px solid #cfd6df;border-radius:8px;padding:3px;margin:0 22px 0 0}
+.battery:after{content:"";position:absolute;right:-12px;top:7px;width:7px;height:14px;background:#cfd6df;border-radius:0 3px 3px 0}
+.bfill{height:100%;border-radius:4px;transition:.4s}
+.kbd{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:6px}
+.key{padding:10px 0;border-radius:8px;border:1px solid var(--line);background:var(--panel2);font-weight:800;font-size:16px}
+.key.ok{background:#173b2b;border-color:var(--good)}.key.no{background:#3f1d22;border-color:var(--bad);opacity:.6}
+.bgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.bcell{aspect-ratio:1/1;border-radius:10px;border:2px solid var(--line);background:var(--panel2);padding:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.bcell svg{width:100%;height:auto}.bcell small{font-size:9px;font-weight:700;line-height:1.1}
+.bcell.on{background:#4a3410;border-color:var(--warn)}.bcell.win{background:#173b2b;border-color:var(--good);animation:pop .4s}
+.bingo{text-align:center;font-size:44px;font-weight:900;color:var(--warn);margin-top:10px;animation:pop .5s}
+.callcard{text-align:center;min-height:200px}
+.callq{font-size:24px;font-weight:800;line-height:1.35;margin:12px 0}
+.conn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.conn>div{display:grid;gap:8px;align-content:start}
+.citem{border:2px solid var(--line);background:var(--panel2);border-radius:12px;padding:8px;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;min-height:62px;justify-content:center}
+.citem svg{width:64px;height:40px}
+.citem.sel{border-color:var(--accent2);background:#1f3550;transform:scale(1.03)}
+.citem.done{opacity:.8}
 /* drawer */
 .drawer{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:none}
 .drawer.on{display:block}
@@ -1154,6 +1179,201 @@ function wordEnd(){
   $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🔤</div><div class="rank" style="font-size:34px">${stars3(WS.score,max)}</div>
     <div class="big">${WS.score} / ${max}</div><div class="actions"><button class="btn" id="wsAgain">New words 🔁</button></div></div>`;
   wireBack(); $('#wsAgain').onclick=wordStart;
+}
+
+/* ---------- more games ---------- */
+GAMES.push(['catch','🎯','Catch It!','Tap only the right devices. Be fast!'],['hang','🔋','Battery Saver','Guess the letters before the battery dies.'],
+           ['bingo','🎱','Class Bingo','Teacher reads clues. Mark your card. BINGO!'],['conn','🔗','Connect It','Match each item to its pair.'],['odd','🧐','Odd One Out','Find the picture that does not belong.']);
+PLAN_EXTRA.push({m:10,t:'Class Bingo 🎱',d:'Every student opens a Bingo card on their phone. The teacher opens “Teacher” mode and reads the clues. First to get a line shouts BINGO!',tip:'Check the winner’s card: ask them to name each part in the line.',g:'bingo'});
+renderExtra();
+const GAME_FN = {sort:sortStart,match:matchStart,who:whoStart,team:teamSetup,fix:fixStart,speed:speedStart,word:wordStart,catch:catchStart,hang:hangStart,bingo:bingoStart,conn:connStart,odd:oddStart};
+startGame = function(id){ clearInterval(GM.timer); clearInterval(GM.t2); $('#toast').classList.remove('on'); sfx('pick'); GAME_FN[id](); window.scrollTo(0,0); };
+const _gm = gameMenu; gameMenu = function(){ clearInterval(GM.t2); _gm(); };
+
+/* Catch It (whack-a-mole) */
+let CT={};
+const CATCH_ITEMS = Object.keys(TYPE_OF).filter(n=>PICS[n] && !PICS[n].startsWith('x_') || n==='CD' || n==='Touchpad');
+function catchStart(){
+  const target=rnd(['Input','Output','Inside part']);
+  CT={target,left:30,score:0,miss:0,cells:Array(9).fill(null),run:false};
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🎯</div><h2>Catch It!</h2>
+    <p style="font-size:18px">Tap only the <b class="hl">${target==='Inside part'?'INSIDE PARTS':target.toUpperCase()+' devices'}</b>!</p>
+    <p class="muted">Right = +1 · Wrong = −1 · 30 seconds</p><p class="muted">Record: ${store.get('pclab_best_catch',0)}</p>
+    <button class="btn" id="ctGo" style="width:100%;font-size:18px">GO! 🎯</button></div>`;
+  wireBack(); $('#ctGo').onclick=()=>{ CT.run=true; sfx('beep'); catchRender();
+    GM.timer=setInterval(()=>{ CT.left--; const e=$('#ctT'); if(e) e.textContent=CT.left; if(CT.left<=0) catchEnd(); },1000);
+    GM.t2=setInterval(catchSpawn,750); };
+}
+function catchSpawn(){
+  if(!CT.run) return;
+  const empty=CT.cells.map((c,k)=>c?-1:k).filter(k=>k>=0); if(!empty.length) return;
+  const k=rnd(empty), isT=Math.random()<.45;
+  const pool=CATCH_ITEMS.filter(n=>(TYPE_OF[n]===CT.target)===isT);
+  const n=rnd(pool), id=Math.random(); CT.cells[k]={n,id};
+  catchCell(k); setTimeout(()=>{ if(CT.cells[k] && CT.cells[k].id===id){ CT.cells[k]=null; catchCell(k); } }, Math.max(900,1700-(30-CT.left)*25));
+}
+function catchRender(){
+  $('#gPlay').innerHTML = backBtn + gstat([[CT.left,'Seconds','ctT'],[CT.score,'Score','ctS']])+
+    `<div class="turnbar t1" style="background:var(--warn);color:#0e1621">Tap the ${CT.target==='Inside part'?'INSIDE PARTS':CT.target.toUpperCase()+' devices'}!</div>
+     <div class="holes">${CT.cells.map((c,k)=>`<button class="hole" data-h="${k}"></button>`).join('')}</div>`;
+  wireBack(); $('#gBack').onclick=()=>{ CT.run=false; clearInterval(GM.timer); clearInterval(GM.t2); gameMenu(); };
+  $('#gPlay').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>catchHit(+b.dataset.h));
+  CT.cells.forEach((_,k)=>catchCell(k));
+}
+function catchCell(k){
+  const b=document.querySelector(`[data-h="${k}"]`); if(!b) return; const c=CT.cells[k];
+  b.innerHTML = c ? `<div class="mole"><svg viewBox="0 0 80 50">${pic(c.n)}</svg><small>${c.n}</small></div>` : '';
+}
+function catchHit(k){
+  const c=CT.cells[k]; if(!c||!CT.run) return; const b=document.querySelector(`[data-h="${k}"]`);
+  const ok=TYPE_OF[c.n]===CT.target; CT.cells[k]=null;
+  if(ok){ CT.score++; sfx('ok'); b.classList.add('hit'); } else { CT.score=Math.max(0,CT.score-1); sfx('bad'); b.classList.add('bad'); toast(`❌ ${c.n} is ${TYPE_OF[c.n]==='Inside part'?'an inside part':TYPE_OF[c.n].toLowerCase()}`); }
+  catchCell(k); setTimeout(()=>b.classList.remove('hit','bad'),300); $('#ctS').textContent=CT.score;
+}
+function catchEnd(){
+  CT.run=false; clearInterval(GM.timer); clearInterval(GM.t2);
+  const best=store.get('pclab_best_catch',0), rec=CT.score>best; if(rec) store.set('pclab_best_catch',CT.score);
+  confetti(); sfx('win');
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🎯</div><div class="big">${CT.score}</div><p>points!</p>
+    ${rec?'<div class="rank">🏆 New record!</div>':`<p class="muted">Record: ${best}</p>`}<div class="actions"><button class="btn" id="ctAgain">Play again 🎯</button></div></div>`;
+  wireBack(); $('#ctAgain').onclick=catchStart;
+}
+
+/* Battery Saver (hangman) */
+const HANG = ['MOUSE','KEYBOARD','MONITOR','PRINTER','SCANNER','SPEAKERS','MODEM','MICROPHONE','TOUCHPAD','MOTHERBOARD','HARDWARE','SOFTWARE','FIRMWARE','LAPTOP','TOWER','DESKTOP'];
+const HANG_CLUE = {HARDWARE:'The parts you can touch.',SOFTWARE:'Programs that tell the hardware what to do.',FIRMWARE:'Software inside a chip, like ROM.',LAPTOP:'A computer you can carry.',TOWER:'A computer that stands under the desk.',DESKTOP:'A computer that lies flat on the desk.'};
+let HG={};
+function hangStart(){ HG={list:pick(HANG,5),i:0,score:0}; hangNew(); }
+function hangNew(){ if(HG.i>=HG.list.length) return hangEnd(); HG.w=HG.list[HG.i]; HG.got=new Set(); HG.bad=new Set(); HG.lock=false; hangRender(); }
+function hangClue(w){ if(HANG_CLUE[w]) return HANG_CLUE[w]; const p=PARTS.find(x=>x[0].toUpperCase()===w); return p?p[1]:''; }
+function hangRender(){
+  const lives=6-HG.bad.size, won=[...HG.w].every(c=>HG.got.has(c));
+  const bat=`<div class="battery"><div class="bfill" style="width:${lives/6*100}%;background:${lives>3?'#3ddb7c':lives>1?'#ffbe55':'#ff6b6b'}"></div></div>`;
+  const nm=HG.w[0]+HG.w.slice(1).toLowerCase(); const showPic=(won||lives<=0)&&pic(nm);
+  $('#gPlay').innerHTML = backBtn + gstat([[`${HG.i+1}/${HG.list.length}`,'Word'],[HG.score,'Score'],[`🔋${lives}`,'Battery']])+
+    `<div class="card" style="text-align:center">${bat}
+     <p style="font-size:17px;margin:12px 0"><b>Clue:</b> ${hangClue(HG.w)}</p>
+     ${showPic?`<div class="qpic">${itemArt(nm)}</div>`:''}
+     <div class="slots">${[...HG.w].map(c=>`<span class="ls${HG.got.has(c)?' f':''}">${HG.got.has(c)||lives<=0?c:''}</span>`).join('')}</div>
+     <div class="kbd">${'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c=>`<button class="key${HG.got.has(c)?' ok':HG.bad.has(c)?' no':''}" data-c="${c}" ${HG.got.has(c)||HG.bad.has(c)||won||lives<=0?'disabled':''}>${c}</button>`).join('')}</div>
+     ${won||lives<=0?`<div class="fb ${won?'good':'bad'}">${won?`🔋 Saved! It’s <b>${HG.w}</b>. +${lives}`:`🪫 The battery died! It was <b>${HG.w}</b>.`}<br><button class="btn" id="hgNext" style="width:100%;margin-top:10px">Next word →</button></div>`:''}</div>`;
+  wireBack();
+  $('#gPlay').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>hangGuess(b.dataset.c));
+  const n=$('#hgNext'); if(n) n.onclick=()=>{ HG.i++; hangNew(); };
+}
+function hangGuess(c){
+  if(HG.w.includes(c)){ HG.got.add(c); sfx('ok'); } else { HG.bad.add(c); sfx('bad'); }
+  const lives=6-HG.bad.size, won=[...HG.w].every(x=>HG.got.has(x));
+  if(won){ HG.score+=lives; sfx('combo'); } else if(lives<=0) sfx('bad');
+  hangRender();
+}
+function hangEnd(){
+  if(HG.score>=15){ confetti(); sfx('win'); }
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🔋</div><div class="big">${HG.score}</div><p>battery points</p>
+    <div class="actions"><button class="btn" id="hgAgain">New words 🔁</button></div></div>`;
+  wireBack(); $('#hgAgain').onclick=hangStart;
+}
+
+/* Class Bingo */
+const BINGO_CLUE = n => { const r=RIDDLES.find(x=>x[0]===n); if(r) return r[1][2]; const d=DOES.find(x=>x[0]===n); if(d) return d[1]+'.'; const p=PARTS.find(x=>x[0]===n); return p?p[1]:n; };
+let BG={};
+function bingoStart(){
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🎱</div><h2>Class Bingo</h2>
+    <p>Students: open <b>My Bingo card</b>.<br>Teacher: open <b>Teacher (read clues)</b> on the projector.</p>
+    <div class="actions" style="flex-direction:column"><button class="btn" id="bgCard">🎱 My Bingo card</button><button class="btn alt" id="bgCall">📢 Teacher (read clues)</button></div></div>`;
+  wireBack(); $('#bgCard').onclick=bingoCard; $('#bgCall').onclick=bingoCaller;
+}
+function bingoCard(){ BG={card:pick(PIC_NAMES,16),mark:new Set(),won:false}; bingoRender(); }
+function bingoLines(){ const L=[]; for(let i=0;i<4;i++){ L.push([0,1,2,3].map(j=>i*4+j)); L.push([0,1,2,3].map(j=>j*4+i)); } L.push([0,5,10,15],[3,6,9,12]); return L; }
+function bingoRender(){
+  const win=bingoLines().find(l=>l.every(k=>BG.mark.has(k)));
+  $('#gPlay').innerHTML = backBtn + `<div class="turnbar t1">🎱 Listen to the teacher. Tap the part!</div>
+    <div class="bgrid">${BG.card.map((n,k)=>`<button class="bcell${BG.mark.has(k)?' on':''}${win&&win.includes(k)?' win':''}" data-b="${k}"><svg viewBox="0 0 80 50">${pic(n)}</svg><small>${n}</small></button>`).join('')}</div>
+    ${win?'<div class="bingo">BINGO! 🎉</div>':''}<button class="btn alt" id="bgNew" style="width:100%;margin-top:10px">New card</button>`;
+  wireBack(); $('#bgNew').onclick=bingoCard;
+  $('#gPlay').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{ const k=+b.dataset.b; BG.mark.has(k)?BG.mark.delete(k):BG.mark.add(k); sfx('pick');
+    const w=bingoLines().some(l=>l.every(x=>BG.mark.has(x))); if(w && !BG.won){ BG.won=true; confetti(); sfx('win'); } if(!w) BG.won=false; bingoRender(); });
+}
+function bingoCaller(){ BG={calls:shuffle(PIC_NAMES),i:-1,show:false}; bingoCall(); }
+function bingoCall(){
+  const n=BG.calls[BG.i];
+  $('#gPlay').innerHTML = backBtn + gstat([[`${BG.i+1}/${BG.calls.length}`,'Clue']])+
+    `<div class="card callcard">${BG.i<0?'<p style="font-size:20px">Press <b>Next clue</b> to start.</p>':`<div class="muted">Clue ${BG.i+1}</div><div class="callq">“${BINGO_CLUE(n)}”</div>
+      ${BG.show?`<div class="qpic">${itemArt(n)}</div><div class="fname">${n}</div>`:'<button class="btn alt" id="bcShow">👀 Show answer</button>'}`}</div>
+     <button class="btn" id="bcNext" style="width:100%;font-size:18px" ${BG.i>=BG.calls.length-1?'disabled':''}>Next clue ▶</button>
+     ${BG.i>0?`<div class="card" style="margin-top:12px"><b>Called:</b> <span class="muted">${BG.calls.slice(0,BG.i).join(' · ')}</span></div>`:''}`;
+  wireBack();
+  $('#bcNext').onclick=()=>{ BG.i++; BG.show=false; sfx('beep'); bingoCall(); };
+  const s=$('#bcShow'); if(s) s.onclick=()=>{ BG.show=true; sfx('ok'); bingoCall(); };
+}
+
+/* Connect It */
+const CONN_ROUNDS = [
+  {t:'Connect each device to its card 🔌',pairs:[['Monitor','Video card'],['Speakers','Sound card'],['Network cable','Network card'],['Phone line','Modem'],['Microphone','Sound card ']]},
+  {t:'Match the short name 🔤',pairs:ABBR.filter(x=>!['AC','DC','CD'].includes(x.a)).map(x=>[x.a,x.f])},
+  {t:'Match the part to its job 🧩',pairs:DOES.map(x=>[x[0],x[1]])},
+  {t:'Match the computer type 🖥️',pairs:MODELS.map(([d,m])=>[m,d[0].toUpperCase()+d.slice(1)])},
+];
+const CONN_PIC = {'Network cable':'the network cable','Phone line':'the phone line'};
+let CN={};
+function connStart(){ CN={r:0,miss:0,total:0}; connRound(); }
+function connRound(){
+  if(CN.r>=CONN_ROUNDS.length) return connEnd();
+  const R=CONN_ROUNDS[CN.r]; let pairs=CN.r===0?pick(R.pairs.slice(0,4),4):pick(R.pairs,4);
+  CN.pairs=pairs; CN.left=shuffle(pairs.map((p,k)=>k)); CN.right=shuffle(pairs.map((p,k)=>k)); CN.done=new Set(); CN.sel=null; connRender();
+}
+function connRender(){
+  const R=CONN_ROUNDS[CN.r], cols=['#3ddbb3','#5aa9ff','#ffbe55','#ff8ac2'];
+  const art=n=>{ const k=CONN_PIC[n]||n; return pic(k)?`<svg viewBox="0 0 80 50">${pic(k)}</svg>`:''; };
+  $('#gPlay').innerHTML = backBtn + gstat([[`${CN.r+1}/${CONN_ROUNDS.length}`,'Round'],[CN.miss,'Mistakes']])+
+    `<div class="card" style="padding:12px"><b>${R.t}</b><div class="muted" style="font-size:13px">Tap one on the left, then its pair on the right.</div></div>
+     <div class="conn"><div>${CN.left.map(k=>{const d=CN.done.has(k); return `<button class="citem${CN.sel===k?' sel':''}${d?' done':''}" data-l="${k}" ${d?`style="border-color:${cols[k]};background:${cols[k]}22"`:''}>${art(CN.pairs[k][0])}<b>${CN.pairs[k][0]}</b></button>`;}).join('')}</div>
+     <div>${CN.right.map(k=>{const d=CN.done.has(k); return `<button class="citem${d?' done':''}" data-r="${k}" ${d?`style="border-color:${cols[k]};background:${cols[k]}22"`:''}>${CN.r===0?art(CN.pairs[k][1].trim()):''}<span>${CN.pairs[k][1]}</span></button>`;}).join('')}</div></div>`;
+  wireBack();
+  $('#gPlay').querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{ const k=+b.dataset.l; if(CN.done.has(k)) return; CN.sel=k; sfx('pick'); connRender(); });
+  $('#gPlay').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{
+    const k=+b.dataset.r; if(CN.sel==null){ toast('Tap an item on the left first 👈'); return; } if(CN.done.has(k)) return;
+    if(CN.pairs[k][1].trim()===CN.pairs[CN.sel][1].trim()){ CN.done.add(CN.sel); if(k!==CN.sel){ /* same text pair */ } sfx('ok'); CN.sel=null;
+      if(CN.done.size===CN.pairs.length){ sfx('combo'); toast('✅ Round complete!'); setTimeout(()=>{ CN.r++; connRound(); },900); } connRender(); }
+    else { CN.miss++; sfx('bad'); b.classList.add('shake'); toast(`❌ ${CN.pairs[CN.sel][0]} → ${CN.pairs[CN.sel][1]}`); setTimeout(connRender,500); }
+  });
+}
+function connEnd(){
+  confetti(); sfx('win');
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🔗</div><div class="rank" style="font-size:34px">${CN.miss<=1?'★★★':CN.miss<=4?'★★☆':'★☆☆'}</div>
+    <p>All 4 rounds done with <b>${CN.miss}</b> mistake${CN.miss===1?'':'s'}.</p><div class="actions"><button class="btn" id="cnAgain">Play again 🔁</button></div></div>`;
+  wireBack(); $('#cnAgain').onclick=connStart;
+}
+
+/* Odd One Out */
+let OD={};
+function oddMake(){
+  const c=rnd(['Input','Output','Inside part','Input','Inside part']);
+  const ins=pick(CATCH_ITEMS.filter(n=>TYPE_OF[n]===c),3), out=rnd(CATCH_ITEMS.filter(n=>TYPE_OF[n]!==c && !(c!=='Inside part' && TYPE_OF[n]==='Storage')));
+  return {c,ans:out,opts:shuffle([...ins,out])};
+}
+function oddStart(){ OD={i:0,score:0,n:8,q:oddMake(),lock:false}; oddRender(); }
+function oddRender(){
+  if(OD.i>=OD.n) return oddEnd();
+  const q=OD.q, lab=x=>x==='Inside part'?'inside parts':x.toLowerCase()+' devices';
+  $('#gPlay').innerHTML = backBtn + gstat([[`${OD.i+1}/${OD.n}`,'Round'],[OD.score,'Score']])+
+    `<div class="card"><h2 style="margin:0">🧐 Which one does NOT belong?</h2><p class="muted" style="margin:6px 0 0">Three are the same type. One is different.</p></div>
+     <div class="opts pics" id="odOpts">${q.opts.map(o=>`<button class="opt" data-o="${o}"><svg viewBox="0 0 80 50">${pic(o)}</svg><span>${o}</span></button>`).join('')}</div><div id="odFb" class="fb" style="display:none"></div>`;
+  wireBack();
+  $('#gPlay').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{
+    if(OD.lock) return; OD.lock=true; const ok=b.dataset.o===q.ans, fb=$('#odFb');
+    b.classList.add(ok?'right':'wrong'); if(!ok) $('#gPlay').querySelector(`[data-o="${q.ans}"]`).classList.add('right');
+    if(ok){ OD.score++; sfx('ok'); } else sfx('bad');
+    fb.style.display='block'; fb.className='fb '+(ok?'good':'bad');
+    const t=TYPE_OF[q.ans]; fb.innerHTML=`${ok?'✅ Yes!':'❌ No.'} The others are <b>${lab(q.c)}</b>. The ${q.ans} is ${t==='Inside part'?'an inside part':t.toLowerCase()}.<br><button class="btn" id="odNext" style="width:100%;margin-top:10px">Next →</button>`;
+    $('#odNext').onclick=()=>{ OD.i++; OD.q=oddMake(); OD.lock=false; oddRender(); window.scrollTo(0,0); };
+  });
+}
+function oddEnd(){
+  if(OD.score>=6){ confetti(); sfx('win'); }
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🧐</div><div class="rank" style="font-size:34px">${stars3(OD.score,OD.n)}</div>
+    <div class="big">${OD.score} / ${OD.n}</div><div class="actions"><button class="btn" id="odAgain">Play again 🔁</button></div></div>`;
+  wireBack(); $('#odAgain').onclick=oddStart;
 }
 
 /* ---------- Build-a-PC game ---------- */
