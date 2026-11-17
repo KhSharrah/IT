@@ -116,8 +116,26 @@ nav button span{font-size:18px}
 .mcard.got{border-color:var(--good);background:#173b2b;transform:none}
 .mcard svg{width:100%;height:auto}
 .clue{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-top:8px;font-size:16px;animation:pop .35s}
-#toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,140%);background:var(--warn);color:#0e1621;font-weight:700;padding:12px 18px;border-radius:14px;z-index:70;transition:.35s;max-width:92vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-#toast.on{transform:translate(-50%,0)}
+#toast{pointer-events:none;position:fixed;left:50%;bottom:20px;transform:translate(-50%,200%);opacity:0;background:var(--warn);color:#0e1621;font-weight:700;padding:12px 18px;border-radius:14px;z-index:70;transition:.35s;max-width:92vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#toast.on{transform:translate(-50%,0);opacity:1}
+.extrahead{background:linear-gradient(135deg,#4a3410,#1d2b3d);border-color:#c7891e;margin-top:22px}
+.tboard{display:flex;gap:8px;margin:0 0 10px}
+.tteam{flex:1;border-radius:14px;padding:10px;text-align:center;border:2px solid var(--line);background:var(--panel);font-weight:700;opacity:.65}
+.tteam b{display:block;font-size:34px}
+.tteam.t0{border-color:#ff6b6b}.tteam.t1{border-color:#5aa9ff}
+.tteam.on{opacity:1;transform:scale(1.04)}.tteam.t0.on{background:#3f1d22}.tteam.t1.on{background:#1f3550}
+.turnbar{border-radius:12px;padding:10px 14px;font-weight:800;margin-bottom:10px;text-align:center}
+.turnbar.t0{background:#ff6b6b;color:#1b0b0e}.turnbar.t1{background:#5aa9ff;color:#071629}
+.shop{display:flex;gap:10px;align-items:flex-start}
+.shop .cust{font-size:54px;line-height:1}
+.bubble{position:relative;background:#e9eff6;color:#1b2330;border-radius:14px;padding:12px 14px;font-size:16px;line-height:1.45;font-weight:600}
+.tfbig{font-size:20px!important;padding:22px!important}
+.slots{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin:14px 0}
+.ls{width:30px;height:38px;border-bottom:3px solid var(--line);font-size:22px;font-weight:800;display:grid;place-items:center}
+.ls.f{border-color:var(--accent);color:var(--accent)}
+.tiles{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-bottom:6px}
+.tile{width:44px;height:48px;border-radius:10px;border:2px solid var(--accent2);background:#1f3550;font-size:22px;font-weight:800}
+.tile:disabled{opacity:.2}
 /* drawer */
 .drawer{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:none}
 .drawer.on{display:block}
@@ -205,6 +223,7 @@ nav button span{font-size:18px}
       <div class="actions" style="margin-top:4px"><button class="btn" id="cStart">▶ Start class timer</button><button class="btn alt" id="cReset" style="flex:.5">Reset</button></div>
     </div>
     <div id="planList"></div>
+    <div id="planExtra"></div>
   </section>
 
   <section id="learn" class="view">
@@ -228,10 +247,10 @@ nav button span{font-size:18px}
       <p class="muted">Choose the correct answer. ✅<br>You get new questions every time.<br>💡 Hint = you get ½ point for that question.</p>
       <div class="row" style="margin:12px 0">
         <label class="f">Questions
-          <select id="qCount"><option>10</option><option selected>15</option><option>20</option><option>30</option></select>
+          <select id="qCount"><option>10</option><option selected>15</option><option>20</option><option>30</option><option>40</option><option>50</option></select>
         </label>
         <label class="f">Time limit
-          <select id="qTime"><option value="5">5 min</option><option value="10" selected>10 min</option><option value="15">15 min</option><option value="20">20 min</option></select>
+          <select id="qTime"><option value="0" selected>No limit ∞</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="20">20 min</option></select>
         </label>
       </div>
       <p class="muted" id="bestTest" style="font-size:14px"></p>
@@ -532,8 +551,73 @@ function addPics(G){
   G.scen.forEach(q=>q.optPics=true);
   G.odd.forEach(q=>q.optPics=true);
 }
+
+const MORE_TF = [
+  ['A microphone is an input device.',true,'True. It puts sound IN.'],
+  ['A monitor is a storage device.',false,'False. A monitor is output.'],
+  ['The hard drive keeps files after you turn off the computer.',true,'True. The hard drive saves files.'],
+  ['The video card connects the computer to the monitor.',true,'True.'],
+  ['The network card connects the speakers.',false,'False. The sound card connects the speakers.'],
+  ['A barcode reader is used in shops.',true,'True. It reads prices fast.'],
+  ['A DVD drive can also read CDs.',true,'True. A DVD drive supports CDs too.'],
+  ['The keyboard is inside the computer case.',false,'False. The keyboard is outside, on the desk.'],
+  ['The CPU is a chip.',true,'True. The CPU is a chip on the motherboard.'],
+  ['A PDA is a big computer under the desk.',false,'False. A PDA is small and in your hand.'],
+  ['Firmware is a type of printer.',false,'False. Firmware is software inside a chip.'],
+  ['WordPerfect is software.',true,'True. It is an application.'],
+  ['The power supply gives power to the parts inside.',true,'True. It gives DC power.'],
+  ['A touchpad is an output device.',false,'False. A touchpad is an input device.'],
+  ['The case protects the parts inside the computer.',true,'True.'],
+  ['MS-DOS was made for IBM computers.',true,'True. MS-DOS 1.0 came in 1981 for IBM.'],
+];
+const MORE_FILL = [
+  ['The ____ prints on paper.','Printer',['Scanner','Monitor','Speakers']],
+  ['You type letters with the ____.','keyboard',['mouse','monitor','speakers']],
+  ['The ____ reads the lines on products.','barcode reader',['scanner','printer','microphone']],
+  ['Laptops have a ____ instead of a mouse.','touchpad',['scanner','modem','printer']],
+  ['The speakers connect to the ____.','sound card',['video card','network card','modem']],
+  ['The monitor connects to the ____.','video card',['sound card','network card','modem']],
+  ['DOS means Disk ____ System.','Operating',['Output','Online','Optical']],
+  ['RAM means Random ____ Memory.','Access',['Active','Audio','Account']],
+  ['CPU means Central ____ Unit.','Processing',['Power','Printing','Program']],
+  ['A ____ stands up under the desk.','tower',['laptop','PDA','printer']],
+  ['The ____ puts paper pictures into the computer.','scanner',['printer','speakers','monitor']],
+  ['A ____ is a computer you can carry.','laptop',['tower','desktop','modem']],
+];
+const MORE_SCEN = [
+  ['You want to talk to your friend on a video call. What do you need to speak?','Microphone',['Printer','Scanner','Monitor'],'The microphone records your voice.'],
+  ['You want to move the pointer and click on an icon. What do you use?','Mouse',['Speakers','Printer','Microphone'],'You click with the mouse.'],
+  ['You want to see a movie on the computer. Where do you look?','Monitor',['Speakers','Keyboard','Scanner'],'You see the picture on the monitor.'],
+  ['Your computer is very hot. Which part has a fan to cool it?','Power supply',['Keyboard','Monitor','Printer'],'The power supply has a fan.'],
+  ['You open a program. It runs very slowly. Which chip runs the instructions?','CPU',['ROM chip','Modem','Printer'],'The CPU runs the instructions.'],
+  ['You want to connect to the internet with an old phone line. What do you need?','Modem',['Scanner','Speakers','Printer'],'The modem connects to the phone line.'],
+  ['You want to save a project for next week. Where do you save it?','Hard drive',['RAM','CPU','Monitor'],'The hard drive keeps files.'],
+  ['You want to give your teacher a paper copy of your photo. What do you use?','Printer',['Scanner','Microphone','Mouse'],'The printer prints on paper.'],
+  ['All the parts must connect together. Which board do they connect to?','Motherboard',['Video card','Sound card','Network card'],'Everything connects to the motherboard.'],
+  ['You plug a cable from the wall into the computer. Which part does it go to?','Power supply',['CPU','RAM','Sound card'],'The wall cable goes to the power supply.'],
+];
+const INOUT = [['Keyboard','Outside'],['Mouse','Outside'],['Monitor','Outside'],['Printer','Outside'],['Speakers','Outside'],['Scanner','Outside'],['Microphone','Outside'],['Barcode reader','Outside'],
+  ['CPU','Inside'],['RAM','Inside'],['Motherboard','Inside'],['Power supply','Inside'],['Hard drive','Inside'],['Video card','Inside'],['Sound card','Inside'],['Network card','Inside']];
+const DOES = [['Power supply','Gives power (AC → DC)'],['CPU','Runs the instructions'],['RAM','Keeps programs for a short time'],['Hard drive','Saves your files'],['Monitor','Shows the picture'],
+  ['Printer','Prints on paper'],['Keyboard','Types letters'],['Mouse','Moves the pointer'],['Scanner','Puts pictures into the computer'],['Speakers','Play sound'],['Microphone','Records your voice'],
+  ['Video card','Sends the picture to the monitor'],['Sound card','Connects speakers and microphone'],['Network card','Connects to the network'],['Modem','Connects to the phone line'],['Barcode reader','Reads the lines on products']];
+function addMore(G){
+  G.tf2 = MORE_TF.map(([s,v,e])=>({kind:'mc',topic:'True or false',prompt:s,answer:v?'True':'False',options:['True','False'],hint:'Look in the Notes sheet.',explain:e}));
+  G.fill2 = MORE_FILL.map(([p,a,d])=>mc('Fill the gap',p.replace('____','<b>_____</b>'),a,d,'Read the sentence. Which word fits?',p.replace('____','<b>'+a+'</b>')));
+  G.scen2 = MORE_SCEN.map(([p,a,d,e])=>{const q=mc('Everyday use',p,a,d,'Think: what do you use for this?',e); q.optPics=true; return q;});
+  G.inout = INOUT.map(([n,w])=>{const q=mc('Inside or outside?',`Is the <b>${n}</b> inside or outside the computer case?`,w+' the case',[],'Parts inside the case are boards, chips and drives.',`The ${n} is ${w.toLowerCase()} the case.`); q.options=['Inside the case','Outside the case']; q.pic=n; return q;});
+  G.does = DOES.map(([n,d])=>{const q=mc('What does it do?',`What does the <b>${n}</b> do?`,d,pick(DOES.filter(x=>x[0]!==n).map(x=>x[1]),3),'Look at the picture. Think about its job.',`${n}: ${d.toLowerCase()}.`); q.pic=n; return q;});
+  G.findType = [];
+  [['Input','an input'],['Output','an output'],['Storage','a storage']].forEach(([c,lab])=>{
+    const ins=DEVTYPE.filter(d=>d[1]===c).map(d=>d[0]).filter(n=>PICS[n]), outs=DEVTYPE.filter(d=>d[1]!==c).map(d=>d[0]).filter(n=>PICS[n]);
+    pick(ins,4).forEach(a=>{const q=mc('Find the device',`Which one is <b>${lab}</b> device?`,a,pick(outs,3),DEV_HINT,`${a} is ${lab} device.`); q.optPics=true; G.findType.push(q);});
+  });
+  G.riddle = RIDDLES.map(([a,cl])=>{const q=mc('Who am I?',`🕵️ “${cl.join(' ')}”<br>Who am I?`,a,pick(PIC_NAMES.filter(x=>x!==a),3),'Read all the clues.',`I am the ${a}.`); q.optPics=true; q.hideLabel=true; return q;});
+  G.sw = [0,1,2,3].map(()=>mc('Hardware or software?','Which one is <b>software</b>?',pick(['Windows 10','Microsoft Office','Adobe Acrobat Reader','WordPerfect','MS-DOS','Unix'],1)[0],pick(['Keyboard','Monitor','CPU','Printer','Mouse','RAM'],3),'Software is a program. You cannot touch it.','Software is a program.'))
+   .concat([0,1,2].map(()=>mc('Hardware or software?','Which one is <b>hardware</b>?',pick(['Keyboard','Monitor','CPU','Printer','Mouse','RAM'],1)[0],pick(['Windows 10','Microsoft Office','Adobe Acrobat Reader','WordPerfect','MS-DOS','Unix'],3),'Hardware is a part you can touch.','Hardware is a part you can touch.')));
+}
 function buildTest(n){
-  const G = buildPool(); addPics(G); const W={picName:3,pickPic:3,scen:2,connect:2,fill:2};
+  const G = buildPool(); addPics(G); addMore(G); const W={picName:2,pickPic:2,scen:2,connect:1,fill:2,riddle:2,does:2};
   const keys = shuffle(Object.keys(G).flatMap(k=>Array(W[k]||1).fill(k)));
   const lists = {}; Object.keys(G).forEach(k=>{ lists[k]=shuffle(G[k]); });
   const out=[], seen=new Set(); let i=0;
@@ -552,15 +636,16 @@ function bestLine(){ const b=store.get('pclab_best_test',null); $('#bestTest').t
 bestLine();
 $('#startBtn').onclick = ()=>{
   const n=+$('#qCount').value, mins=+$('#qTime').value;
-  T = {qs:buildTest(n),i:0,score:0,results:[],left:mins*60,sel:null,hint:false,checked:false,over:false};
+  T = {qs:buildTest(n),i:0,score:0,results:[],left:mins*60,limit:mins>0,used:0,sel:null,hint:false,checked:false,over:false};
   showT('tRun');
   clearInterval(window._tt); window._tt=setInterval(tick,1000); tick(true); renderQ();
 };
 function tick(first){
-  if(!first) T.left--;
-  $('#sTime').textContent = fmt(T.left);
-  $('#timeBox').classList.toggle('low',T.left<=60);
-  if(T.left<=0) finish(true);
+  if(!first){ T.used++; if(T.limit) T.left--; }
+  $('#timeBox').querySelector('span').textContent = T.limit?'Time left':'Time ∞';
+  $('#sTime').textContent = fmt(T.limit?T.left:T.used);
+  $('#timeBox').classList.toggle('low',T.limit && T.left<=60);
+  if(T.limit && T.left<=0) finish(true);
 }
 function renderQ(){
   const q=T.qs[T.i]; T.sel=null; T.hint=false; T.checked=false;
@@ -612,7 +697,7 @@ function finish(timeout){
   if(pct>store.get('pclab_best_test',0)) store.set('pclab_best_test',pct);
   $('#eScore').innerHTML=`<div style="font-size:64px">${pct>=90?'🏆':pct>=70?'🎉':pct>=50?'👍':'📚'}</div>${T.score} / ${T.qs.length}`;
   if(pct>=70){ confetti(); sfx('win'); }
-  $('#eMsg').innerHTML=(timeout?'⏰ Time is up! ':'')+`${pct}% · `+(pct>=90?'Excellent! You are ready. 🌟':pct>=70?'Good job! Look at your mistakes below.':pct>=50?'Not bad! Read the notes and try again.':'Read the notes, then try again. You can do it! 💪');
+  $('#eMsg').innerHTML=(timeout?'⏰ Time is up! ':'')+`${pct}% · ⏱ ${fmt(T.used)} · `+(pct>=90?'Excellent! You are ready. 🌟':pct>=70?'Good job! Look at your mistakes below.':pct>=50?'Not bad! Read the notes and try again.':'Read the notes, then try again. You can do it! 💪');
   $('#eReview').innerHTML=T.results.map((r,k)=>`<li><span class="${r.ok?'ok':'no'}">${r.ok?'✓':'✗'} Q${k+1}</span> · <span class="muted">${r.q.topic}</span><br>${r.q.pic?`<svg viewBox="0 0 80 50" style="width:70px;height:44px;vertical-align:middle;margin-right:6px">${pic(r.q.pic)}</svg>`:''}${r.q.prompt.replace(/<br>.*/,'')} ${r.q.prompt.includes('<br>')?'<span class="muted">'+r.q.prompt.split('<br>')[1]+'</span>':''}<br>Your answer: <b>${r.given==null?'(no answer)':r.given}</b>${r.ok?'':` · Correct: <b>${r.q.answer}</b>`}${r.ok&&r.pts<1?' <span class="muted">(hint used)</span>':''}</li>`).join('');
   showT('tEnd'); window.scrollTo(0,0);
 }
@@ -639,7 +724,7 @@ const PLAN = [
   {a:45,b:52,t:'Desktop teardown 🪛',d:'Take the computer apart safely. What do you do first?',tip:'Discuss: why do we unplug the power first?',go:['build'],btn:'Go to teardown'},
   {a:52,b:60,t:'Game: Memory Match 🧠',d:'Find the pairs: a picture and its name.',tip:'Fewest moves wins!',go:['games','match'],btn:'Play Memory Match'},
   {a:60,b:65,t:'Game: Who Am I? 🕵️',d:'Read the clues and guess the part. Fewer clues = more points.',tip:'Read the clues out loud together.',go:['games','who'],btn:'Play Who Am I?'},
-  {a:65,b:75,t:'Practice test 📝',d:'10 questions in 10 minutes. Then look at your mistakes.',tip:'Collect the scores at the end of class.',go:['test',null,{n:10,m:10}],btn:'Open the test'},
+  {a:65,b:75,t:'Practice test 📝',d:'Answer 10 questions (no time limit). Then look at your mistakes.',tip:'Collect the scores at the end of class.',go:['test',null,{n:10,m:0}],btn:'Open the test'},
 ];
 const CL = {sec:0,run:false,timer:null,step:-1};
 function stepAt(s){ const m=s/60; return PLAN.findIndex(p=>m>=p.a && m<p.b); }
@@ -875,6 +960,201 @@ function whoEnd(){
   wireBack(); $('#wAgain').onclick=whoStart;
 }
 renderPlan();
+
+/* ---------- extra games (finished early) ---------- */
+GAMES.push(['team','🏆','Team Quiz Battle','Two teams. Answer, or steal points!'],['fix','🛠️','Fix the PC','Customers have problems. Find the broken part.'],
+           ['speed','⚡','Speed Round','60 seconds. True or false? Go fast!'],['word','🔤','Word Scramble','Put the letters in order.']);
+const PLAN_EXTRA = [
+  {m:12,t:'Team Quiz Battle 🏆',d:'Split the class into two teams. Put the screen on the projector. Teams take turns. Wrong answer? The other team can steal the point!',tip:'Let a different student answer each time.',g:'team'},
+  {m:8,t:'Fix the PC 🛠️',d:'You work in a computer repair shop. Read each customer’s problem and find the broken part. Earn coins!',tip:'Ask: “How do you know?” after each answer.',g:'fix'},
+  {m:5,t:'Speed Round ⚡',d:'60 seconds. Answer true or false as fast as you can. Beat the class record!',tip:'Play 2–3 times. Write the best scores on the board.',g:'speed'},
+  {m:5,t:'Word Scramble 🔤',d:'Look at the picture. Tap the letters in the right order to spell the part.',tip:'Good for spelling the key words.',g:'word'},
+];
+function renderExtra(){
+  $('#planExtra').innerHTML = `<div class="card extrahead"><h2 style="margin:0 0 4px">⭐ Finished early? Extra 30 minutes</h2><p class="muted" style="margin:0">Use these activities after the test, or any time you have extra time.</p></div>`+
+    PLAN_EXTRA.map((p,k)=>`<div class="card pstep"><span class="tag">Extra ${k+1} · ${p.m} min</span>
+      <h3 style="margin:10px 0 6px;color:var(--text);font-size:17px">${p.t}</h3><p style="margin:0 0 6px">${p.d}</p>
+      <p class="muted" style="margin:0 0 10px;font-size:13px">👩‍🏫 ${p.tip}</p><button class="btn alt" data-xg="${p.g}" style="width:100%">▶ Play</button></div>`).join('');
+  $('#planExtra').querySelectorAll('[data-xg]').forEach(b=>b.onclick=()=>go('games',b.dataset.xg));
+}
+renderExtra();
+startGame = function(id){ clearInterval(GM.timer); $('#toast').classList.remove('on'); sfx('pick'); ({sort:sortStart,match:matchStart,who:whoStart,team:teamSetup,fix:fixStart,speed:speedStart,word:wordStart})[id](); window.scrollTo(0,0); };
+
+/* Team Quiz Battle */
+let TB={};
+function teamSetup(){
+  $('#gPlay').innerHTML = backBtn + `<div class="card"><h2>Team Quiz Battle 🏆</h2>
+    <p class="muted">Two teams take turns. Wrong answer → the other team can <b>steal</b> the point.</p>
+    <div class="row" style="margin:10px 0"><label class="f">Team 1<input class="txt" id="tA" value="Red Team 🔴"></label><label class="f">Team 2<input class="txt" id="tB" value="Blue Team 🔵"></label></div>
+    <label class="f" style="margin-bottom:14px">Questions<select id="tN"><option>10</option><option selected>16</option><option>20</option><option>30</option></select></label>
+    <button class="btn" id="tGo" style="width:100%">Start the battle ⚔️</button></div>`;
+  wireBack();
+  $('#tGo').onclick=()=>{ TB={names:[$('#tA').value||'Team 1',$('#tB').value||'Team 2'],score:[0,0],qs:buildTest(+$('#tN').value),i:0,turn:0,steal:false,tried:[],lock:false}; sfx('combo'); teamRender(); };
+}
+function teamRender(){
+  if(TB.i>=TB.qs.length) return teamEnd();
+  const q=TB.qs[TB.i], who=TB.steal?1-TB.turn:TB.turn;
+  const board=`<div class="tboard">${[0,1].map(k=>`<div class="tteam t${k}${who===k?' on':''}"><div>${TB.names[k]}</div><b>${TB.score[k]}</b></div>`).join('')}</div>`;
+  const opts = q.optPics
+    ? `<div class="opts pics${q.hideLabel?' hide':''}">${q.options.map((o,k)=>`<button class="opt${TB.tried.includes(o)?' wrong':''}" data-k="${k}" ${TB.tried.includes(o)?'disabled':''}><svg viewBox="0 0 80 50">${pic(o)}</svg><span>${o}</span></button>`).join('')}</div>`
+    : `<div class="opts${q.options.length===2?' two':''}">${q.options.map((o,k)=>`<button class="opt${TB.tried.includes(o)?' wrong':''}" data-k="${k}" ${TB.tried.includes(o)?'disabled':''}>${o==='True'?'✅ True':o==='False'?'❌ False':o}</button>`).join('')}</div>`;
+  $('#gPlay').innerHTML = backBtn + board +
+    `<div class="turnbar t${who}">${TB.steal?'🦹 STEAL! ':''}${TB.names[who]}, your turn! · Q${TB.i+1}/${TB.qs.length}</div>
+     <div class="card"><span class="tag">${q.topic}</span><div class="qtext">${q.pic?`<div class="qpic"><svg viewBox="0 0 80 50">${pic(q.pic)}</svg></div>`:''}${q.prompt}</div>${opts}<div id="tFb" class="fb" style="display:none"></div></div>`;
+  wireBack();
+  $('#gPlay').querySelectorAll('.opt').forEach(b=>b.onclick=()=>teamPick(b));
+}
+function teamPick(b){
+  if(TB.lock) return;
+  const q=TB.qs[TB.i], o=q.options[+b.dataset.k], who=TB.steal?1-TB.turn:TB.turn, ok=o===q.answer, fb=$('#tFb');
+  if(ok){
+    TB.lock=true; TB.score[who]++; sfx(TB.steal?'combo':'ok'); b.classList.add('right');
+    const pw=$('#gPlay .opts.hide'); if(pw) pw.classList.remove('hide');
+    fb.style.display='block'; fb.className='fb good'; fb.innerHTML=`✅ ${TB.steal?'Stolen! 🦹 ':''}+1 for ${TB.names[who]}!<br><span style="opacity:.85">${q.explain}</span><br><button class="btn" id="tNext" style="width:100%;margin-top:10px">Next question →</button>`;
+    $('#tNext').onclick=teamNext;
+  } else if(!TB.steal && q.options.length>2){
+    sfx('bad'); TB.tried.push(o); TB.steal=true; teamRender(); toast(`❌ Wrong! ${TB.names[1-TB.turn]} can steal!`);
+  } else {
+    TB.lock=true; sfx('bad'); b.classList.add('wrong');
+    const pw=$('#gPlay .opts.hide'); if(pw) pw.classList.remove('hide');
+    $('#gPlay').querySelectorAll('.opt').forEach((x,k)=>{ if(q.options[k]===q.answer) x.classList.add('right'); });
+    fb.style.display='block'; fb.className='fb bad'; fb.innerHTML=`❌ No point this time. The answer is <b>${q.answer}</b>.<br><span style="opacity:.85">${q.explain}</span><br><button class="btn" id="tNext" style="width:100%;margin-top:10px">Next question →</button>`;
+    $('#tNext').onclick=teamNext;
+  }
+}
+function teamNext(){ TB.i++; TB.turn=1-TB.turn; TB.steal=false; TB.tried=[]; TB.lock=false; teamRender(); window.scrollTo(0,0); }
+function teamEnd(){
+  const [a,b]=TB.score, win=a===b?-1:a>b?0:1; confetti(); sfx('win');
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:64px">🏆</div>
+    <div class="rank">${win<0?'It’s a draw! 🤝':TB.names[win]+' wins!'}</div>
+    <div class="tboard">${[0,1].map(k=>`<div class="tteam t${k}${win===k?' on':''}"><div>${TB.names[k]}</div><b>${TB.score[k]}</b></div>`).join('')}</div>
+    <div class="actions"><button class="btn" id="tAgain">Rematch ⚔️</button></div></div>`;
+  wireBack(); $('#tAgain').onclick=teamSetup;
+}
+
+/* Fix the PC */
+const FIX = [
+  ['👩','My screen is black, but the computer is on. The monitor works with another computer.','Video card',['Sound card','Keyboard','Printer']],
+  ['👨','The speakers are new and working, but I can’t hear any sound.','Sound card',['Video card','Network card','Mouse']],
+  ['🧓','The computer does not turn on. No fan, no lights, nothing!','Power supply',['Speakers','Mouse','Scanner']],
+  ['👦','I saved my files yesterday. Today they are all gone!','Hard drive',['Monitor','Printer','Microphone']],
+  ['👧','I move my mouse, but the pointer on the screen does not move.','Mouse',['Monitor','Speakers','Hard drive']],
+  ['👨‍💼','I press the keys, but no letters appear on the screen.','Keyboard',['Printer','Speakers','Scanner']],
+  ['👩‍🎓','The network cable is in, but I have no network.','Network card',['Sound card','Video card','Hard drive']],
+  ['🧑','In video calls, my friends can’t hear my voice.','Microphone',['Speakers','Monitor','Printer']],
+  ['👵','I click “Print”, but no paper comes out.','Printer',['Scanner','Monitor','Microphone']],
+  ['🧑‍💻','The computer can’t run any program. The “brain” chip is broken.','CPU',['Printer','Speakers','DVD drive']],
+  ['👨‍🎓','When I open many programs, they close. The short-time memory is too small.','RAM',['Hard drive','Monitor','Mouse']],
+  ['👩‍🍳','I put a movie disc in, but it does not play.','DVD drive',['Hard drive','Printer','Keyboard']],
+  ['🧑‍🌾','My shop can’t read the price lines on the products.','Barcode reader',['Scanner','Printer','Keyboard']],
+  ['👴','I can’t put my old paper photos into the computer.','Scanner',['Printer','Monitor','Speakers']],
+  ['👩‍🔧','My phone-line internet does not work.','Modem',['Sound card','Printer','Scanner']],
+  ['🧔','Nothing works together. The main board is broken!','Motherboard',['Mouse','Speakers','Printer']],
+  ['👨‍🏫','My laptop has no mouse, and my finger on the pad does nothing.','Touchpad',['Keyboard','Monitor','Speakers']],
+  ['🧕','The computer gets very hot. The fan in the power box stopped.','Power supply',['Keyboard','Monitor','Microphone']],
+];
+let FX={};
+function fixStart(){ FX={list:pick(FIX,10),i:0,coins:0,ok:0,lock:false}; fixRender(); }
+function fixRender(){
+  if(FX.i>=FX.list.length) return fixEnd();
+  const [face,txt,ans,dis]=FX.list[FX.i]; if(!FX.opts) FX.opts=shuffle([ans,...dis]);
+  $('#gPlay').innerHTML = backBtn + gstat([[`${FX.i+1}/${FX.list.length}`,'Customer'],['💰'+FX.coins,'Coins'],[FX.ok,'Fixed']])+
+    `<div class="card"><div class="shop"><div class="cust">${face}</div><div class="bubble">“${txt}”</div></div>
+     <p style="margin:12px 0 0;font-weight:700">🛠️ Which part is broken?</p></div>
+     <div class="opts pics">${FX.opts.map(o=>`<button class="opt" data-o="${o}"><svg viewBox="0 0 80 50">${pic(o)}</svg><span>${o}</span></button>`).join('')}</div>
+     <div id="fxFb" class="fb" style="display:none"></div>`;
+  wireBack(); $('#gPlay').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>fixPick(b));
+}
+function fixPick(b){
+  if(FX.lock) return; FX.lock=true;
+  const ans=FX.list[FX.i][2], ok=b.dataset.o===ans, fb=$('#fxFb');
+  b.classList.add(ok?'right':'wrong'); if(!ok) $('#gPlay').querySelector(`[data-o="${ans}"]`).classList.add('right');
+  if(ok){ FX.coins+=10; FX.ok++; sfx('combo'); } else sfx('bad');
+  fb.style.display='block'; fb.className='fb '+(ok?'good':'bad');
+  fb.innerHTML=(ok?`✅ Fixed! The customer is happy 😄 +💰10`:`❌ Not fixed 😟 The broken part was the <b>${ans}</b>.`)+`<br><button class="btn" id="fxNext" style="width:100%;margin-top:10px">Next customer →</button>`;
+  $('#fxNext').onclick=()=>{ FX.i++; FX.opts=null; FX.lock=false; fixRender(); window.scrollTo(0,0); };
+}
+function fixEnd(){
+  if(FX.ok>=7){ confetti(); sfx('win'); }
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🛠️</div><div class="rank" style="font-size:34px">${stars3(FX.ok,FX.list.length)}</div>
+    <div class="big">💰 ${FX.coins}</div><p>You fixed <b>${FX.ok}</b> of ${FX.list.length} computers.</p>
+    <p class="muted">${FX.ok>=9?'Best repair shop in town! 🏅':FX.ok>=7?'Good technician! 👍':'Keep practising! 💪'}</p>
+    <div class="actions"><button class="btn" id="fxAgain">New customers 🔁</button></div></div>`;
+  wireBack(); $('#fxAgain').onclick=fixStart;
+}
+
+/* Speed Round */
+let SP={};
+function speedQ(){
+  if(Math.random()<.5){ const t=rnd([...TF,...MORE_TF]); return {html:`<div class="qtext" style="text-align:center">${t[0]}</div>`,ans:t[1],exp:t[2]}; }
+  const n=rnd(PIC_NAMES), real=Math.random()<.5, shown=real?n:rnd(PIC_NAMES.filter(x=>x!==n));
+  return {html:`<div class="qpic">${itemArt(n)}</div><div class="qtext" style="text-align:center">This is the <b>${shown}</b>.</div>`,ans:real,exp:`This is the ${n}.`};
+}
+function speedStart(){
+  SP={left:60,score:0,wrong:0,run:false,q:null};
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">⚡</div><h2>Speed Round</h2>
+    <p>60 seconds. Is it <b>true</b> or <b>false</b>?<br>Right = +1. Wrong = −1.</p><p class="muted">Class record: ${store.get('pclab_best_speed',0)}</p>
+    <button class="btn" id="spGo" style="width:100%;font-size:18px">GO! ⚡</button></div>`;
+  wireBack(); $('#spGo').onclick=()=>{ SP.run=true; sfx('beep'); clearInterval(GM.timer);
+    GM.timer=setInterval(()=>{ SP.left--; const e=$('#spT'); if(e) e.textContent=SP.left; if(SP.left<=5 && SP.left>0) sfx('pick'); if(SP.left<=0){ clearInterval(GM.timer); speedEnd(); } },1000); speedNext(); };
+}
+function speedNext(){
+  SP.q=speedQ();
+  $('#gPlay').innerHTML = backBtn + gstat([[SP.left,'Seconds','spT'],[SP.score,'Score'],[SP.wrong,'Wrong']])+
+    `<div class="card" id="spCard">${SP.q.html}</div><div class="opts two"><button class="opt tfbig" data-v="1">✅ True</button><button class="opt tfbig" data-v="0">❌ False</button></div>`;
+  wireBack();
+  $('#gPlay').querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ if(!SP.run) return;
+    const ok=(b.dataset.v==='1')===SP.q.ans;
+    if(ok){ SP.score++; sfx('ok'); } else { SP.score=Math.max(0,SP.score-1); SP.wrong++; sfx('bad'); toast('❌ '+SP.q.exp); }
+    speedNext(); });
+}
+function speedEnd(){
+  SP.run=false; const best=store.get('pclab_best_speed',0), rec=SP.score>best; if(rec) store.set('pclab_best_speed',SP.score);
+  confetti(); sfx('win');
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">⏱️</div><div class="big">${SP.score}</div>
+    <p>points in 60 seconds · ${SP.wrong} wrong</p>${rec?'<div class="rank">🏆 New class record!</div>':`<p class="muted">Class record: ${best}</p>`}
+    <div class="actions"><button class="btn" id="spAgain">Again! ⚡</button></div></div>`;
+  wireBack(); $('#spAgain').onclick=speedStart;
+}
+
+/* Word Scramble */
+const WORDS = ['Mouse','Keyboard','Monitor','Printer','Scanner','Speakers','Modem','CPU','RAM','Microphone','Touchpad','Motherboard','CD'];
+let WS={};
+function wordStart(){ WS={list:pick(WORDS,8),i:0,score:0}; wordNew(); }
+function wordNew(){
+  if(WS.i>=WS.list.length) return wordEnd();
+  const w=WS.list[WS.i].toUpperCase(); let tiles;
+  do { tiles=shuffle(w.split('').map((c,k)=>({c,k}))); } while(w.length>2 && tiles.map(t=>t.c).join('')===w);
+  WS.w=w; WS.tiles=tiles; WS.used=[]; WS.hint=false; WS.lock=false; wordRender();
+}
+function wordRender(){
+  const n=WS.list[WS.i], built=WS.used.map(k=>WS.tiles[k].c);
+  const pre=WS.hint&&!WS.used.length?1:0;
+  $('#gPlay').innerHTML = backBtn + gstat([[`${WS.i+1}/${WS.list.length}`,'Word'],[WS.score,'Score']])+
+    `<div class="card" style="text-align:center"><div class="qpic">${itemArt(n)}</div>
+     <div class="slots">${WS.w.split('').map((c,k)=>`<span class="ls${built[k]?' f':''}">${built[k]||(WS.hint&&k===0?`<i style="opacity:.4">${c}</i>`:'')}</span>`).join('')}</div>
+     <div class="tiles">${WS.tiles.map((t,k)=>`<button class="tile" data-t="${k}" ${WS.used.includes(k)?'disabled':''}>${t.c}</button>`).join('')}</div>
+     <div class="actions"><button class="btn alt" id="wsUndo">↩ Undo</button><button class="btn alt" id="wsHint" ${WS.hint?'disabled':''}>💡 First letter</button><button class="btn alt" id="wsSkip">Skip</button></div>
+     <div id="wsFb" class="fb" style="display:none"></div></div>`;
+  wireBack();
+  $('#gPlay').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ if(WS.lock) return; WS.used.push(+b.dataset.t); sfx('pick'); wordCheck(); });
+  $('#wsUndo').onclick=()=>{ WS.used.pop(); wordRender(); };
+  $('#wsHint').onclick=()=>{ WS.hint=true; wordRender(); };
+  $('#wsSkip').onclick=()=>{ toast(`The word was: ${WS.w}`); WS.i++; wordNew(); };
+}
+function wordCheck(){
+  const built=WS.used.map(k=>WS.tiles[k].c).join('');
+  if(built.length<WS.w.length) return wordRender();
+  wordRender(); WS.lock=true; const fb=$('#wsFb'); fb.style.display='block';
+  if(built===WS.w){ const pts=WS.hint?1:2; WS.score+=pts; sfx('combo'); fb.className='fb good'; fb.innerHTML=`✅ ${WS.w}! +${pts}`; setTimeout(()=>{ WS.i++; wordNew(); },1100); }
+  else { sfx('bad'); fb.className='fb bad'; fb.innerHTML='❌ Not quite. Try again!'; setTimeout(()=>{ WS.used=[]; wordRender(); },1000); }
+}
+function wordEnd(){
+  const max=WS.list.length*2; if(WS.score/max>=.6){ confetti(); sfx('win'); }
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🔤</div><div class="rank" style="font-size:34px">${stars3(WS.score,max)}</div>
+    <div class="big">${WS.score} / ${max}</div><div class="actions"><button class="btn" id="wsAgain">New words 🔁</button></div></div>`;
+  wireBack(); $('#wsAgain').onclick=wordStart;
+}
 
 /* ---------- Build-a-PC game ---------- */
 const INT = {
