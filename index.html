@@ -80,46 +80,58 @@ table.ab td:first-child{font-weight:800;color:var(--accent2);width:60px}
 .fab{position:fixed;right:14px;bottom:16px;z-index:30;border-radius:30px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
 
 /* build game */
-.msg{min-height:48px;padding:11px 14px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);font-size:15px;line-height:1.4;margin-bottom:12px}
-.msg.good{background:#173b2b;border-color:#2c7a52}
-.msg.bad{background:#3f1d22;border-color:#84343d;animation:shake .35s}
-@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.case{background:#0b121b;border:3px solid #3a4f6b;border-radius:16px;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative}
-.case:before{content:"OPEN CASE (side view)";position:absolute;top:-11px;left:14px;background:var(--bg);font-size:10px;letter-spacing:.1em;color:var(--muted);padding:0 6px}
-.slot{border:2px dashed #3d5574;border-radius:11px;min-height:62px;padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:12px;color:var(--muted);transition:.15s}
-.slot.fill{border-style:solid;border-color:var(--accent);color:var(--text);background:#13302b}
-.slot.target{border-color:var(--accent2);background:#16273c;color:var(--text)}
-.slot .ic{font-size:24px;line-height:1}
-.bays{display:grid;gap:8px}
-.s-mobo{grid-column:1/-1;min-height:190px}
-.s-mobo.fill{background:#0f3a28;border-color:#2e9b63;justify-content:flex-start}
-.board{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;width:100%;margin-top:6px}
-.board .slot{min-height:56px;background:rgba(0,0,0,.25)}
-.board .slot.fill{background:#13302b}
-.rom{border:2px solid #556a85;border-radius:9px;font-size:11px;padding:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#c7d3e2;background:#1b2636}
-.tray{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.part{background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:9px 12px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:7px}
-.part .ic{font-size:20px}
-.part.sel{border-color:var(--accent2);background:#1f3550;transform:translateY(-2px)}
-.ports{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;background:#0b121b;border:3px solid #3a4f6b;border-radius:16px;padding:12px;position:relative}
-.ports:before{content:"BACK OF THE CASE";position:absolute;top:-11px;left:14px;background:var(--bg);font-size:10px;letter-spacing:.1em;color:var(--muted);padding:0 6px}
-.port{border:2px dashed #3d5574;border-radius:11px;padding:10px;min-height:84px;font-size:12px;color:var(--muted);text-align:center}
-.port.target{border-color:var(--accent2);background:#16273c}
-.port.full{border-style:solid;border-color:var(--accent)}
-.chip{display:inline-flex;align-items:center;gap:4px;background:#13302b;border:1px solid #2c7a52;color:var(--text);border-radius:20px;padding:4px 9px;margin:5px 2px 0;font-size:13px}
-.chip.rm,.slot.rm{cursor:pointer}
-.boot{display:grid;gap:9px}
+.byte{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
+.byte svg{width:58px;height:58px;flex:none}
+.byte.hop svg{animation:hop .45s}
+@keyframes hop{40%{transform:translateY(-10px) rotate(-6deg)}}
+.msg{flex:1;position:relative;min-height:52px;padding:11px 14px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);font-size:15px;line-height:1.4}
+.msg:before{content:"";position:absolute;left:-7px;top:18px;width:12px;height:12px;background:inherit;border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+.msg.good{background:#173b2b;border-color:#2c7a52}.msg.good:before{border-color:#2c7a52}
+.msg.bad{background:#3f1d22;border-color:#84343d}.msg.bad:before{border-color:#84343d}
+.msg.combo{background:#4a3410;border-color:#c7891e}
+@keyframes shake{20%{transform:translateX(-7px) rotate(-1deg)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+.shake{animation:shake .4s}
+.scene{width:100%;height:auto;display:block;background:radial-gradient(circle at 50% 30%,#14202e,#0a1018);border:1px solid var(--line);border-radius:16px;touch-action:manipulation}
+.scene text{font-family:system-ui,sans-serif;pointer-events:none}
+.lb{font-size:10px;font-weight:800;fill:#e9eff6;letter-spacing:.04em}
+.lb.dark{fill:#1b2330}
+.cap{font-size:9px;font-weight:700;fill:#8ea2bb;letter-spacing:.08em}
+.ghost{fill:rgba(90,169,255,.05);stroke:#4b6a90;stroke-width:1.5;stroke-dasharray:6 4}
+.gtxt{font-size:10px;fill:#8ea2bb;font-weight:700}
+.hot .ghost{fill:rgba(90,169,255,.16);stroke:#5aa9ff;stroke-width:2.5;animation:dash .8s linear infinite}
+.hot .gtxt{fill:#cfe4ff}
+@keyframes dash{to{stroke-dashoffset:-20}}
+.flash .ghost{fill:rgba(255,107,107,.3);stroke:#ff6b6b;stroke-dasharray:none;animation:none}
+.pop{transform-box:fill-box;transform-origin:center;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+.spark{animation:spark .7s forwards;transform-box:fill-box;transform-origin:center}
+@keyframes spark{0%{transform:scale(.2);opacity:1}100%{transform:scale(1.6);opacity:0}}
+[data-slot],[data-port],[data-rm],[data-rme]{cursor:pointer}
+.rmable:hover{filter:brightness(1.25)}
+.tearing .rmable{animation:wob 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes wob{50%{transform:rotate(.8deg)}}
+.fan{transform-box:view-box}
+.on .fan{animation:spin .45s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.blink{animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:0}}
+.cable{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:400;animation:draw .6s ease-out}
+@keyframes draw{from{stroke-dashoffset:400}}
+.tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:12px}
+.part{background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:6px 4px 8px;font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px;transition:transform .15s}
+.part svg{width:80px;height:50px}
+.part.sel{border-color:var(--accent2);background:#1f3550;transform:translateY(-4px) scale(1.04);box-shadow:0 6px 16px rgba(90,169,255,.25)}
+.boot{display:grid;gap:9px;margin-top:12px}
 .step{text-align:left;background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px}
 .step.done{border-color:var(--good);background:#173b2b;opacity:.75}
 .step .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--good);color:#0e1621;font-weight:800;font-size:13px;margin-right:8px}
-.screen{background:#000;border:10px solid #2a3442;border-radius:14px;aspect-ratio:16/10;max-width:460px;margin:6px auto 0;display:flex;flex-direction:column;align-items:center;justify-content:center;background-image:linear-gradient(135deg,#1554a8,#3ddbb3);color:#fff;text-align:center;padding:14px}
-.screen .stars{font-size:34px;letter-spacing:4px}
-.stand{width:90px;height:16px;background:#2a3442;margin:0 auto;border-radius:0 0 8px 8px}
 .phase{display:flex;gap:6px;margin-bottom:12px}
-.phase span{flex:1;height:6px;border-radius:6px;background:var(--panel2)}
+.phase span{flex:1;height:6px;border-radius:6px;background:var(--panel2);transition:.4s}
 .phase span.on{background:var(--accent)}
 .gstats{display:flex;gap:8px;margin-bottom:12px}
-@media(min-width:700px){.case{grid-template-columns:1fr 2fr}.board{grid-template-columns:repeat(6,1fr)}}
+.stat.combo b{color:var(--warn)}
+.mute{background:var(--panel);border:1px solid var(--line);border-radius:12px;font-size:20px;width:52px;flex:none}
+.rank{font-size:22px;font-weight:800;color:var(--warn);margin:6px 0}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
 </style>
 </head>
 <body>
@@ -204,9 +216,11 @@ table.ab td:first-child{font-weight:800;color:var(--accent2);width:60px}
     <div class="gstats">
       <div class="stat"><b id="gTime">0:00</b><span>Time</span></div>
       <div class="stat"><b id="gMiss">0</b><span>Mistakes</span></div>
-      <div class="stat"><b id="gBest">–</b><span>Best build</span></div>
+      <div class="stat combo"><b id="gCombo">0</b><span>Combo 🔥</span></div>
+      <div class="stat"><b id="gBest">–</b><span>Best</span></div>
+      <button class="mute" id="muteBtn" aria-label="Sound on or off">🔊</button>
     </div>
-    <div class="msg" id="gMsg"></div>
+    <div class="byte" id="byteBox"><svg id="byteFace" viewBox="0 0 60 60"></svg><div class="msg" id="gMsg"></div></div>
     <div id="gArea"></div>
   </section>
 </main>
@@ -217,6 +231,13 @@ table.ab td:first-child{font-weight:800;color:var(--accent2);width:60px}
   <div id="sheetBody"></div>
 </div></div>
 
+<canvas id="confetti"></canvas>
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="gMetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7dee7"/><stop offset="1" stop-color="#8c99a8"/></linearGradient>
+<linearGradient id="gPcb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16603a"/><stop offset="1" stop-color="#0d4429"/></linearGradient>
+<linearGradient id="gScreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1554a8"/><stop offset="1" stop-color="#3ddbb3"/></linearGradient>
+<linearGradient id="gCase" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2c3746"/><stop offset="1" stop-color="#3a475a"/></linearGradient>
+</defs></svg>
 <script>
 /* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
@@ -483,43 +504,51 @@ function finish(timeout){
 
 /* ---------- Build-a-PC game ---------- */
 const INT = {
-  psu:{n:'Power supply',i:'⚡',fit:'psu',fact:'It converts AC from the wall into DC for every part, and its fan keeps things cool.'},
-  mobo:{n:'Motherboard',i:'🟩',fit:'mobo',fact:'The largest circuit board. Every part connects through it.'},
-  cpu:{n:'CPU',i:'🔳',fit:'cpu',fact:'The processor: it interprets and executes program instructions.'},
-  ram:{n:'RAM',i:'📏',fit:'ram',fact:'Temporary memory next to the CPU. It needs power to keep its data.'},
-  gpu:{n:'Video card',i:'🎞️',fit:'exp',fact:'It will send the picture to the monitor.'},
-  snd:{n:'Sound card',i:'🎵',fit:'exp',fact:'The speakers and microphone will plug into it.'},
-  net:{n:'Network card',i:'🌐',fit:'exp',fact:'It connects the PC to the network with a cable.'},
-  hdd:{n:'Hard drive',i:'💾',fit:'bay',fact:'Magnetic storage that keeps your files.'},
-  dvd:{n:'DVD drive',i:'💿',fit:'bay',fact:'It reads CDs and music and video DVDs.'},
-  prn:{n:'Printer',i:'🖨️',decoy:'A printer is an external OUTPUT device. It stays outside the case!'},
-  scn:{n:'Scanner',i:'📠',decoy:'A scanner is an external INPUT device. It sits on the desk, not in the case!'},
-  bar:{n:'Barcode reader',i:'🏷️',decoy:'A barcode reader is an external INPUT device used at shop counters, not a part inside the case!'},
+  psu:{n:'Power supply',fit:'psu',fact:'It converts AC from the wall into DC for every part, and its fan keeps things cool.'},
+  mobo:{n:'Motherboard',fit:'mobo',fact:'The largest circuit board. Every part connects through it.'},
+  cpu:{n:'CPU',fit:'cpu',fact:'The processor, the brain of the PC: it executes program instructions.'},
+  ram:{n:'RAM',fit:'ram',fact:'Temporary memory next to the CPU. It needs power to keep its data.'},
+  gpu:{n:'Video card',fit:'exp',fact:'It will send the picture to the monitor.'},
+  snd:{n:'Sound card',fit:'exp',fact:'The speakers and microphone will plug into it.'},
+  net:{n:'Network card',fit:'exp',fact:'It connects the PC to the network with a cable.'},
+  hdd:{n:'Hard drive',fit:'bay',fact:'Magnetic storage that keeps your files.'},
+  dvd:{n:'DVD drive',fit:'bay',fact:'It reads CDs and music and video DVDs.'},
+  prn:{n:'Printer',decoy:'A printer is an external OUTPUT device. It stays outside the case!'},
+  scn:{n:'Scanner',decoy:'A scanner is an external INPUT device. It sits on the desk, not in the case!'},
+  bar:{n:'Barcode reader',decoy:'A barcode reader is an external INPUT device for shop counters, not a part inside the case!'},
 };
 const SLOT = {
-  psu:{l:'Power supply bay',fit:'psu'}, bay1:{l:'Drive bay',fit:'bay'}, bay2:{l:'Drive bay',fit:'bay'},
-  mobo:{l:'Motherboard tray',fit:'mobo'}, cpu:{l:'CPU socket',fit:'cpu'}, ram:{l:'RAM slot',fit:'ram'},
-  exp1:{l:'Expansion slot',fit:'exp'}, exp2:{l:'Expansion slot',fit:'exp'}, exp3:{l:'Expansion slot',fit:'exp'},
+  psu:{l:'Power supply bay',fit:'psu',b:[24,24,150,70]},
+  bay1:{l:'Drive bay',fit:'bay',b:[192,24,144,32]}, bay2:{l:'Drive bay',fit:'bay',b:[192,62,144,32]},
+  mobo:{l:'Motherboard tray',fit:'mobo',b:[24,108,312,318]},
+  cpu:{l:'CPU socket',fit:'cpu',b:[150,138,72,72]}, ram:{l:'RAM',fit:'ram',b:[252,124,24,124]},
+  exp1:{l:'Expansion slot',fit:'exp',b:[54,262,250,36]}, exp2:{l:'Expansion slot',fit:'exp',b:[54,310,250,36]}, exp3:{l:'Expansion slot',fit:'exp',b:[54,358,250,36]},
 };
 const WRONG = {
   psu:'The power supply needs its own bay where the power cord can reach it.',
   mobo:'The motherboard is the big board everything else attaches to. Put it on the motherboard tray.',
-  cpu:'The CPU goes in the CPU socket on the motherboard.',
-  ram:'RAM goes in the RAM slot on the motherboard, near the CPU.',
+  cpu:'The CPU goes in the square CPU socket on the motherboard.',
+  ram:'RAM goes in the long RAM slot on the motherboard, near the CPU.',
   exp:'Cards (video, sound, network) plug into the expansion slots on the motherboard.',
   bay:'Drives slide into the drive bays.',
 };
 const EXT = {
-  pwr:{n:'Power cord',i:'🔌',port:'psu'}, mon:{n:'Monitor',i:'🖥️',port:'gpu'}, kbd:{n:'Keyboard',i:'⌨️',port:'usb'},
-  mse:{n:'Mouse',i:'🖱️',port:'usb'}, spk:{n:'Speakers',i:'🔊',port:'snd'}, mic:{n:'Microphone',i:'🎤',port:'snd'}, cab:{n:'Network cable',i:'🔗',port:'net'},
+  pwr:{n:'Power cord',port:'psu',col:'#aab4c0',dev:[300,26,48,58],a:[324,55]},
+  mon:{n:'Monitor',port:'gpu',col:'#5aa9ff',dev:[4,20,108,92],a:[58,112]},
+  kbd:{n:'Keyboard',port:'usb',col:'#c3cbd6',dev:[6,392,106,36],a:[59,392]},
+  mse:{n:'Mouse',port:'usb',col:'#c3cbd6',dev:[302,384,32,46],a:[318,384]},
+  spk:{n:'Speakers',port:'snd',col:'#7ed957',dev:[12,184,42,66],a:[33,250]},
+  mic:{n:'Microphone',port:'snd',col:'#ff8ac2',dev:[66,286,34,72],a:[83,358]},
+  cab:{n:'Network cable',port:'net',col:'#e8d27a',dev:[302,326,44,50],a:[324,351]},
 };
 const PORT = {
-  psu:{l:'Power supply socket',cap:1,why:'The power cord plugs into the power supply.'},
-  gpu:{l:'Video card port',cap:1,why:'The monitor gets its picture from the video card.'},
-  snd:{l:'Sound card jacks',cap:2,why:'Speakers and microphones connect through the sound card.'},
-  net:{l:'Network card port',cap:1,why:'The network cable plugs into the network card.'},
-  usb:{l:'Motherboard ports',cap:2,why:'The keyboard and mouse plug into the ports on the motherboard.'},
+  psu:{l:'Power supply socket',cap:1,b:[128,28,114,72],why:'The power cord plugs into the power supply.'},
+  usb:{l:'Motherboard ports',cap:2,b:[128,110,114,104],why:'The keyboard and mouse plug into the ports on the motherboard.'},
+  gpu:{l:'Video card port',cap:1,b:[128,228,114,44],why:'The monitor gets its picture from the video card.'},
+  snd:{l:'Sound card jacks',cap:2,b:[128,280,114,44],why:'Speakers (green jack) and microphone (pink jack) connect through the sound card.'},
+  net:{l:'Network card port',cap:1,b:[128,332,114,44],why:'The network cable plugs into the network card.'},
 };
+const PLUGPT = {pwr:[151,62],mon:[180,249],kbd:[157,133],mse:[157,153],spk:[160,302],mic:[180,302],cab:[181,353]};
 const BOOT = [
   'The power supply turns the wall’s AC into DC for the parts',
   'The ROM chip (firmware) starts the computer up',
@@ -527,97 +556,245 @@ const BOOT = [
   'The CPU runs the operating system’s instructions',
   'The video card sends the Windows desktop to the monitor',
 ];
+const OK_LINES = ['Click! Perfect fit.','Smooth like butter.','Nailed it!','Snapped right in!','Technician skills: unlocked.','Chef’s kiss. 👌'];
+const OOPS_LINES = ['Bzzzt! ⚡','Whoa there! 😵','Uh-oh, sparks! 💥','Nope nope nope! 🙅','Yikes! 🫣'];
+const rnd = a => a[Math.floor(Math.random()*a.length)];
+
+/* --- svg helpers --- */
+const R=(x,y,w,h,a='')=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" ${a}/>`;
+const C=(x,y,r,a='')=>`<circle cx="${x}" cy="${y}" r="${r}" ${a}/>`;
+const TX=(x,y,s,a='')=>`<text x="${x}" y="${y}" ${a}>${s}</text>`;
+function fan(cx,cy,r){
+  let b=''; for(let k=0;k<5;k++) b+=`<ellipse cx="${cx}" cy="${cy-r*.5}" rx="${r*.22}" ry="${r*.46}" fill="#6b7c92" transform="rotate(${k*72} ${cx} ${cy})"/>`;
+  return C(cx,cy,r+2,'fill="#0f151d" stroke="#8796a8" stroke-width="1.5"')+`<g class="fan" style="transform-origin:${cx}px ${cy}px">${b}${C(cx,cy,r*.22,'fill="#2b3644"')}</g>`;
+}
+const fs = h => `font-size="${Math.max(7,Math.min(11,h*.32)).toFixed(1)}"`;
+const DRAW = {
+  psu:(x,y,w,h,L=1)=>R(x,y,w,h,'rx="5" fill="url(#gMetal)" stroke="#9aa8b8"')+[0,1,2,3].map(i=>R(x+8,y+8+i*5,w*.35,2,'fill="#7d8a99"')).join('')+R(x+8,y+h-26,22,18,'rx="3" fill="#1b1f26" stroke="#55606e"')+R(x+14,y+h-20,3,6,'fill="#999"')+R(x+21,y+h-20,3,6,'fill="#999"')+fan(x+w-h/2-4,y+h/2,h*.34)+(L?TX(x+36,y+h-10,'PSU',`class="lb dark" ${fs(h)}`):''),
+  hdd:(x,y,w,h,L=1)=>R(x,y,w,h,'rx="3" fill="url(#gMetal)" stroke="#9aa8b8"')+C(x+h*.5+4,y+h/2,h*.4,'fill="#e3e9f0" stroke="#7a8796"')+C(x+h*.5+4,y+h/2,h*.1,'fill="#7a8796"')+`<line x1="${x+h*1.3}" y1="${y+h*.25}" x2="${x+h*.6}" y2="${y+h*.55}" stroke="#39424e" stroke-width="3" stroke-linecap="round"/>`+(L?TX(x+w-8,y+h/2+4,'HARD DRIVE',`class="lb dark" text-anchor="end" ${fs(h)}`):''),
+  dvd:(x,y,w,h,L=1)=>R(x,y,w,h,'rx="3" fill="#20252d" stroke="#4d5866"')+R(x+8,y+h*.62,w*.62,3,'rx="1" fill="#05070a"')+C(x+w-12,y+h*.66,3,'fill="#5ad16b"')+C(x+16,y+h*.34,h*.22,'fill="none" stroke="#8796a8" stroke-width="1.5"')+C(x+16,y+h*.34,1.5,'fill="#8796a8"')+(L?TX(x+w-8,y+h*.42,'DVD',`class="lb" text-anchor="end" ${fs(h)}`):''),
+  mobo:(x,y,w,h,L=1)=>{
+    let t=R(x,y,w,h,'rx="6" fill="url(#gPcb)" stroke="#2e9b63" stroke-width="2"');
+    const tr=[[.08,.15,.4,.15,.4,.35],[.1,.55,.6,.55,.6,.45],[.75,.1,.75,.4,.95,.4],[.3,.9,.3,.75,.8,.75],[.55,.05,.55,.3]];
+    tr.forEach(p=>{let d='M'+(x+p[0]*w)+' '+(y+p[1]*h); for(let i=2;i<p.length;i+=2) d+=' L'+(x+p[i]*w)+' '+(y+p[i+1]*h); t+=`<path d="${d}" stroke="#4fd18c" stroke-opacity=".35" stroke-width="1.5" fill="none"/>`;});
+    [[.03,.03],[.97,.03],[.03,.97],[.97,.97]].forEach(([a,b])=>t+=C(x+a*w,y+b*h,Math.max(2,w*.012),'fill="#c9a24a"'));
+    t+=R(x,y+h*.04,w*.05,h*.22,'fill="#9aa6b4"')+R(x+w*.3,y+h*.42,w*.1,w*.1,'rx="2" fill="#1d2a22" stroke="#3a5a46"');
+    for(let i=0;i<5;i++) t+=C(x+w*(.5+i*.035),y+h*.06,Math.max(1.5,w*.01),'fill="#2b3644" stroke="#7d8a99" stroke-width=".8"');
+    return t+(L?TX(x+w-10,y+h-10,'MOTHERBOARD',`class="lb" text-anchor="end" fill-opacity=".5" font-size="11"`):'');
+  },
+  cpu:(x,y,w,h,L=1)=>R(x,y,w,h,'rx="3" fill="#c9a24a"')+R(x+5,y+5,w-10,h-10,'rx="4" fill="url(#gMetal)" stroke="#7a8796"')+(L?TX(x+w/2,y+h/2+4,'CPU',`class="lb dark" text-anchor="middle" font-size="${Math.min(14,h*.22)}"`):''),
+  ram:(x,y,w,h)=>{ const v=h>w; let t=R(x,y,w,h,'rx="2" fill="#1f7a3d" stroke="#3fbf6a"');
+    for(let i=0;i<4;i++) t+= v? R(x+4,y+8+i*(h-16)/4,w-8,(h-16)/4-5,'rx="1" fill="#151a20"') : R(x+8+i*(w-16)/4,y+3,(w-16)/4-5,h-9,'rx="1" fill="#151a20"');
+    return t+(v?R(x+w-3,y+4,3,h-8,'fill="#d6b04c"'):R(x+4,y+h-3,w-8,3,'fill="#d6b04c"')); },
+  card:(x,y,w,h,col)=>R(x-6,y-4,6,h+4,'fill="#aab6c4"')+R(x,y,w,h,`rx="3" fill="${col}" stroke="#ffffff30"`)+R(x+20,y+h-4,w*.5,4,'fill="#d6b04c"'),
+  gpu:(x,y,w,h,L=1)=>DRAW.card(x,y,w,h,'#2b2f36')+fan(x+w*.3,y+h/2-1,h*.34)+fan(x+w*.6,y+h/2-1,h*.34)+(L?TX(x+w-6,y+h/2+4,'VIDEO',`class="lb" text-anchor="end" ${fs(h)}`):''),
+  snd:(x,y,w,h,L=1)=>DRAW.card(x,y,w,h,'#1e4f8a')+C(x+14,y+h/2,h*.14,'fill="#7ed957"')+C(x+28,y+h/2,h*.14,'fill="#ff8ac2"')+C(x+42,y+h/2,h*.14,'fill="#5aa9ff"')+R(x+w*.45,y+h*.25,h*.4,h*.4,'fill="#111"')+(L?TX(x+w-6,y+h/2+4,'SOUND',`class="lb" text-anchor="end" ${fs(h)}`):''),
+  net:(x,y,w,h,L=1)=>DRAW.card(x,y,w,h,'#8a6a12')+R(x+8,y+h/2-8,18,14,'rx="1" fill="#e6e9ee" stroke="#555"')+R(x+12,y+h/2-4,10,6,'fill="#333"')+C(x+32,y+h/2-4,2.5,'fill="#3ddb7c"')+C(x+32,y+h/2+4,2.5,'fill="#ffbe55"')+(L?TX(x+w-6,y+h/2+4,'NETWORK',`class="lb" text-anchor="end" ${fs(h)}`):''),
+  prn:()=>R(18,4,44,16,'fill="#fff" stroke="#bbb"')+[0,1,2].map(i=>R(23,8+i*4,30-i*6,1.5,'fill="#99a"')).join('')+R(8,16,64,24,'rx="5" fill="#cfd6df" stroke="#8796a8"')+R(16,36,48,8,'rx="2" fill="#9aa5b2"')+C(62,23,2.5,'fill="#3ddb7c"'),
+  scn:()=>R(6,16,68,8,'rx="2" fill="#9aa5b2"')+R(6,24,68,18,'rx="3" fill="#cfd6df" stroke="#8796a8"')+R(10,28,60,3,'fill="#5aa9ff"')+C(66,37,2,'fill="#3ddb7c"'),
+  bar:()=>`<path d="M14 10 h40 l8 10 v8 h-22 l-6 18 h-12 l4 -18 h-12 z" fill="#2b3644" stroke="#8796a8"/>`+R(56,18,4,12,'fill="#ff6b6b"')+`<path d="M62 24 L78 14 M62 24 L78 34" stroke="#ff6b6b" stroke-width="1.5" opacity=".7"/>`,
+  // external devices
+  mon:(x,y,w,h)=>R(x,y,w,h*.78,'rx="5" fill="#1b222c" stroke="#56657a" stroke-width="2"')+R(x+5,y+5,w-10,h*.78-10,'rx="2" fill="url(#gScreen)"')+R(x+w/2-6,y+h*.78,12,h*.12,'fill="#56657a"')+R(x+w/2-22,y+h*.9,44,h*.08,'rx="3" fill="#56657a"'),
+  kbd:(x,y,w,h)=>{let t=R(x,y,w,h,'rx="5" fill="#2a3240" stroke="#56657a"'); const cols=11,kw=(w-8)/cols; for(let r=0;r<3;r++)for(let c=0;c<cols;c++) t+=R(x+4+c*kw+.5,y+4+r*(h-8)/3+.5,kw-1.5,(h-8)/3-2,'rx="1" fill="#4a5566"'); return t;},
+  mse:(x,y,w,h)=>`<ellipse cx="${x+w/2}" cy="${y+h/2}" rx="${w/2}" ry="${h/2}" fill="#2a3240" stroke="#8796a8" stroke-width="1.5"/>`+`<line x1="${x+w/2}" y1="${y+2}" x2="${x+w/2}" y2="${y+h*.4}" stroke="#8796a8"/>`+R(x+w/2-2,y+h*.15,4,h*.16,'rx="2" fill="#5aa9ff"'),
+  spk:(x,y,w,h)=>R(x,y,w,h,'rx="6" fill="#2a3240" stroke="#56657a" stroke-width="1.5"')+C(x+w/2,y+h*.28,w*.15,'fill="#151a20" stroke="#8796a8"')+C(x+w/2,y+h*.66,w*.32,'fill="#151a20" stroke="#8796a8"')+C(x+w/2,y+h*.66,w*.1,'fill="#56657a"'),
+  mic:(x,y,w,h)=>R(x+w/2-8,y,16,h*.42,'rx="8" fill="#9aa6b4" stroke="#56657a"')+[1,2,3].map(i=>`<line x1="${x+w/2-6}" y1="${y+i*h*.1}" x2="${x+w/2+6}" y2="${y+i*h*.1}" stroke="#56657a"/>`).join('')+R(x+w/2-1.5,y+h*.42,3,h*.45,'fill="#56657a"')+`<ellipse cx="${x+w/2}" cy="${y+h*.92}" rx="${w/2}" ry="${h*.07}" fill="#2a3240" stroke="#56657a"/>`,
+  pwr:(x,y,w,h)=>R(x,y,w,h,'rx="6" fill="#e9edf2" stroke="#9aa5b2"')+R(x+w*.3,y+h*.28,4,h*.22,'rx="1" fill="#333"')+R(x+w*.62,y+h*.28,4,h*.22,'rx="1" fill="#333"')+C(x+w/2,y+h*.72,3,'fill="#333"'),
+  cab:(x,y,w,h)=>R(x,y,w,h,'rx="6" fill="#e9edf2" stroke="#9aa5b2"')+R(x+w/2-9,y+h/2-7,18,14,'rx="1" fill="#333"')+TX(x+w/2,y+h-5,'LAN','font-size="8" text-anchor="middle" fill="#555" font-weight="700"'),
+};
+const THUMB = {psu:[4,6,72,38],hdd:[4,12,72,26],dvd:[4,12,72,26],mobo:[8,2,64,46],cpu:[19,4,42,42],ram:[4,16,72,18],gpu:[10,10,64,28],snd:[10,10,64,28],net:[10,10,64,28],
+  mon:[16,2,48,46],kbd:[2,12,76,26],mse:[28,4,24,42],spk:[22,2,36,46],mic:[24,2,32,46]};
+function thumb(k){
+  if(k==='pwr') return `<path d="M40 2 C40 10 20 8 40 16" stroke="#aab4c0" stroke-width="4" fill="none"/>`+R(26,14,28,22,'rx="4" fill="#333" stroke="#666"')+R(32,36,4,10,'fill="#c9ccd1"')+R(44,36,4,10,'fill="#c9ccd1"');
+  if(k==='cab') return `<path d="M40 2 C40 14 24 10 40 22" stroke="#e8d27a" stroke-width="5" fill="none"/>`+R(30,20,20,20,'rx="2" fill="#e8d27a" stroke="#9c8a3a"')+R(33,38,14,8,'fill="#d9dde3" stroke="#888"');
+  const b=THUMB[k]; return b ? DRAW[k](...b,0) : DRAW[k]();
+}
+function byteFace(m){
+  const eyes = {happy:'<path d="M17 28 q5 -6 10 0 M33 28 q5 -6 10 0" stroke="#0e1621" stroke-width="3" fill="none" stroke-linecap="round"/>',
+    oops:'<path d="M18 23 l8 8 M26 23 l-8 8 M34 23 l8 8 M42 23 l-8 8" stroke="#0e1621" stroke-width="3" stroke-linecap="round"/>',
+    wow:'<circle cx="22" cy="27" r="5" fill="#0e1621"/><circle cx="38" cy="27" r="5" fill="#0e1621"/><circle cx="23.5" cy="25.5" r="1.6" fill="#fff"/><circle cx="39.5" cy="25.5" r="1.6" fill="#fff"/>',
+    idle:'<circle cx="22" cy="27" r="3.5" fill="#0e1621"/><circle cx="38" cy="27" r="3.5" fill="#0e1621"/>'}[m];
+  const mouth = {happy:'<path d="M22 38 q8 8 16 0" stroke="#0e1621" stroke-width="3" fill="none" stroke-linecap="round"/>',oops:'<path d="M22 41 q4 -4 8 0 q4 4 8 0" stroke="#0e1621" stroke-width="2.5" fill="none" stroke-linecap="round"/>',
+    wow:'<ellipse cx="30" cy="40" rx="4" ry="5" fill="#0e1621"/>',idle:'<path d="M24 39 h12" stroke="#0e1621" stroke-width="3" stroke-linecap="round"/>'}[m];
+  const col = m==='oops'?'#ff8b7b':'#3ddbb3';
+  return `<line x1="30" y1="4" x2="30" y2="12" stroke="#8796a8" stroke-width="2.5"/><circle cx="30" cy="4" r="3.5" fill="${m==='oops'?'#ff6b6b':'#ffbe55'}"/>`+R(8,12,44,40,`rx="12" fill="${col}"`)+R(3,26,6,12,'rx="2" fill="#8796a8"')+R(51,26,6,12,'rx="2" fill="#8796a8"')+eyes+mouth;
+}
+
+/* --- sound + confetti --- */
+let AC=null, muted=store.get('pclab_mute',false);
+const SFX = {pick:[[700,.05]],ok:[[660,.08],[990,.13]],bad:[[190,.16,'sawtooth'],[130,.22,'sawtooth']],combo:[[660,.07],[880,.07],[1320,.16]],
+  plug:[[330,.05,'square'],[880,.08]],boot:[[523,.12],[659,.12],[784,.12],[1047,.32]],beep:[[1000,.22,'square']],step:[[520,.06],[780,.1]],
+  unscrew:[[420,.04,'triangle'],[360,.04,'triangle'],[300,.06,'triangle']],win:[[523,.1],[659,.1],[784,.1],[1047,.12],[784,.1],[1047,.4]]};
+function sfx(n){ if(muted) return; try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume();
+  let t=AC.currentTime+.01; SFX[n].forEach(([f,d,w])=>{const o=AC.createOscillator(),g=AC.createGain(); o.type=w||'sine'; o.frequency.value=f;
+    g.gain.setValueAtTime(.13,t); g.gain.exponentialRampToValueAtTime(.001,t+d); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+d+.02); t+=d*.85;}); }catch(e){} }
+$('#muteBtn').textContent = muted?'🔇':'🔊';
+$('#muteBtn').onclick=()=>{ muted=!muted; store.set('pclab_mute',muted); $('#muteBtn').textContent=muted?'🔇':'🔊'; if(!muted) sfx('pick'); };
+function confetti(){
+  const cv=$('#confetti'), x=cv.getContext('2d'); cv.width=innerWidth; cv.height=innerHeight;
+  const cols=['#3ddbb3','#5aa9ff','#ffbe55','#ff6b6b','#ff8ac2','#ffffff'];
+  const ps=Array.from({length:150},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.5,vx:(Math.random()-.5)*3,vy:2+Math.random()*4,r:Math.random()*6.28,vr:(Math.random()-.5)*.3,s:5+Math.random()*6,c:rnd(cols)}));
+  let f=0; (function loop(){ x.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.vy+=.04; x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore();});
+    if(++f<200) requestAnimationFrame(loop); else x.clearRect(0,0,cv.width,cv.height); })();
+}
+
+/* --- game state --- */
 let G = {started:false};
 function newGame(){
   clearInterval(G.timer);
   G = {started:true,phase:1,placed:{},conn:{psu:[],gpu:[],snd:[],net:[],usb:[]},sel:null,miss:0,sec:0,timer:null,boot:[],bootOrder:shuffle(BOOT.map((_,k)=>k)),
-       buildMiss:0,buildSec:0};
-  say('Tap a part in the tray, then tap where it goes inside the case. Watch out: not everything belongs inside!');
+       buildMiss:0,buildSec:0,combo:0,bestCombo:0,fresh:null,flash:null};
+  say('Hi, I’m <b>Byte</b>! 🤖 Help me build a computer. Tap a part, then tap where it goes in the case. Careful: some parts are tricks!','','wow');
   renderBuild();
 }
 function startClock(){ if(!G.timer) G.timer=setInterval(()=>{G.sec++; $('#gTime').textContent=fmt(G.sec);},1000); }
 function stopClock(){ clearInterval(G.timer); G.timer=null; }
-function say(t,cls){ const m=$('#gMsg'); m.className='msg'; void m.offsetWidth; if(cls) m.classList.add(cls); m.innerHTML=t; }
-function oops(t){ G.miss++; $('#gMiss').textContent=G.miss; say('⚠️ '+t,'bad'); }
+function say(t,cls,mood){
+  const m=$('#gMsg'); m.className='msg'+(cls?' '+cls:''); m.innerHTML=t;
+  $('#byteFace').innerHTML=byteFace(mood||(cls==='bad'?'oops':cls?'happy':'idle'));
+  const b=$('#byteBox'); b.classList.remove('hop'); void b.offsetWidth; b.classList.add('hop');
+}
+function good(t){
+  G.combo++; G.bestCombo=Math.max(G.bestCombo,G.combo); $('#gCombo').textContent=G.combo;
+  if(G.combo>=3 && G.combo%3===0){ sfx('combo'); say(`🔥 <b>COMBO x${G.combo}!</b> You’re on fire! `+t,'combo','wow'); }
+  else say(`${rnd(OK_LINES)} `+t,'good','happy');
+}
+function oops(t,where){
+  G.miss++; G.combo=0; $('#gMiss').textContent=G.miss; $('#gCombo').textContent=0;
+  sfx('bad'); say(`<b>${rnd(OOPS_LINES)}</b> `+t,'bad','oops');
+  G.flash=where||null; renderBuild();
+  const sc=document.querySelector('#gArea .scene'); if(sc){ sc.classList.remove('shake'); void sc.getBoundingClientRect(); sc.classList.add('shake'); }
+  if(navigator.vibrate) try{navigator.vibrate(120);}catch(e){}
+}
 function setPhase(n){ document.querySelectorAll('.phase span').forEach((s,k)=>s.classList.toggle('on',k<n)); }
 const INTRO = {
-  1:['Step 1 · Install the parts','Put every internal part in the right place. The motherboard must go in before anything that sits on it.'],
-  2:['Step 2 · Connect the devices','Close the case and turn it around. Plug each outside device into the correct port.'],
-  3:['Step 3 · Power on!','Put the start-up steps in the right order to boot the computer.'],
-  4:['It works! 🎉','Your computer booted. Now try the Chapter 7 challenge and tear it down safely.'],
-  5:['Step 4 · Desktop teardown','Take the PC apart safely. Tap a part to remove it. Order matters!'],
+  1:['Step 1 · Install the parts','Put every internal part in the right place. The motherboard has to go in before anything that sits on it.'],
+  2:['Step 2 · Connect the devices','The case is closed and turned around. Plug each device into the right port and watch the cables appear.'],
+  3:['Step 3 · Power on!','Put the start-up steps in order and watch the monitor come to life.'],
+  4:['It works! 🎉','Your computer booted. Now take the real Chapter 7 challenge: tear it down safely.'],
+  5:['Step 4 · Desktop teardown','Take the PC apart safely. Tap a device, cable or part to remove it. Order matters!'],
   6:['Teardown complete 🔧','You built it, booted it and took it apart.'],
 };
+
+/* --- scenes --- */
+function caseSVG(tear){
+  let s=`<svg class="scene${tear?' tearing':''}" viewBox="0 0 360 450">`;
+  s+=R(6,6,348,438,'rx="16" fill="url(#gCase)" stroke="#56657a" stroke-width="2"')+R(16,16,328,418,'rx="10" fill="#0c131c"');
+  for(let i=0;i<6;i++) s+=R(28+i*8,440,4,2,'fill="#56657a"');
+  const sl = id => {
+    const p=G.placed[id], [x,y,w,h]=SLOT[id].b;
+    if(p){ const cls=(G.fresh===id?'pop ':'')+(tear?'rmable':''); return `<g class="${cls}" ${tear?`data-rm="${id}"`:`data-slot="${id}"`}>${DRAW[p](x,y,w,h)}</g>`; }
+    const hot = !tear && G.sel && INT[G.sel] ? ' hot':''; const fl = G.flash===id?' flash':'';
+    let conn='';
+    if(id.startsWith('exp')) conn=R(x+20,y+h-8,w*.6,7,'rx="1" fill="#05070a" stroke="#3a4a5e"');
+    if(id==='cpu') conn=R(x+10,y+10,w-20,h-20,'fill="none" stroke="#3a4a5e" stroke-dasharray="2 3"');
+    if(id==='ram') conn=R(x+w/2-3,y+4,6,h-8,'rx="1" fill="#05070a" stroke="#3a4a5e"');
+    const lab = id==='ram' ? `<text x="${x+w/2}" y="${y+h/2}" class="gtxt" text-anchor="middle" transform="rotate(-90 ${x+w/2} ${y+h/2})">RAM SLOT</text>` : TX(x+w/2,y+h/2+(id.startsWith('exp')?-2:4),SLOT[id].l.toUpperCase(),'class="gtxt" text-anchor="middle"');
+    return `<g class="eslot${hot}${fl}" data-slot="${id}">${R(x,y,w,h,'rx="6" class="ghost"')}${conn}${lab}</g>`;
+  };
+  s+=sl('psu')+sl('bay1')+sl('bay2');
+  if(G.placed.mobo){
+    s+=sl('mobo');
+    s+=`<g>${R(70,150,44,26,'rx="2" fill="#151a20" stroke="#8796a8"')}${TX(92,167,'ROM','class="lb" text-anchor="middle" font-size="9"')}${TX(92,190,'firmware','class="cap" text-anchor="middle" font-size="8"')}</g>`;
+    ['cpu','ram','exp1','exp2','exp3'].forEach(k=>s+=sl(k));
+    if(G.placed.cpu && G.placed.psu) s+=`<path d="M174 94 C 174 118 186 118 186 138" stroke="#d64545" stroke-width="3" fill="none" stroke-dasharray="1 0"/>`;
+  } else {
+    s+= tear ? R(24,108,312,318,'rx="6" fill="none" stroke="#2a3a4e" stroke-dasharray="4 4"')+TX(180,270,'EMPTY MOTHERBOARD TRAY','class="gtxt" text-anchor="middle"') : sl('mobo');
+    [[40,124],[320,124],[40,410],[320,410],[180,124],[180,410]].forEach(([a,b])=>s+=C(a,b,3,'fill="#56657a"'));
+  }
+  if(G.flash && SLOT[G.flash]){ const [x,y,w,h]=SLOT[G.flash].b; s+=`<g class="spark"><text x="${x+w/2}" y="${y+h/2+12}" font-size="34" text-anchor="middle">💥</text></g>`; }
+  s+=TX(20,13,'OPEN CASE · SIDE VIEW','class="cap"');
+  return s+'</svg>';
+}
+function backSVG(tear){
+  let s=`<svg class="scene${tear?' tearing':''}${(G.phase===5&&G.powered)?' on':''}" viewBox="0 0 360 440">`;
+  // devices + cables first (under panel)
+  Object.keys(EXT).forEach(k=>{
+    const port=Object.keys(G.conn).find(p=>G.conn[p].includes(k)); if(!port) return;
+    const d=EXT[k], [px,py]=PLUGPT[k], [ax,ay]=d.a;
+    const path=`M${ax} ${ay} C ${ax} ${(ay+py)/2}, ${(ax+px)/2} ${py}, ${px} ${py}`;
+    s+=`<g class="${G.fresh===k?'pop ':''}${tear?'rmable':''}" ${tear?`data-rme="${k}"`:''}><path class="cable" d="${path}" stroke="${d.col}"/>${DRAW[k](...d.dev)}</g>`;
+  });
+  s+=R(118,16,134,412,'rx="10" fill="url(#gCase)" stroke="#56657a" stroke-width="2"');
+  const sec=(id,inner,label)=>{ const [x,y,w,h]=PORT[id].b; const full=G.conn[id].length>=PORT[id].cap;
+    const hot=!tear && G.sel && EXT[G.sel] && !full?' hot':''; const fl=G.flash===id?' flash':'';
+    return `<g class="eslot${hot}${fl}" data-port="${id}">${R(x,y,w,h,'rx="5" class="ghost"')}${inner}${TX(x+4,y+10,label,'class="cap" font-size="7.5"')}</g>`; };
+  s+=sec('psu',R(130,30,110,68,'rx="4" fill="url(#gMetal)" opacity=".9"')+R(138,51,26,22,'rx="3" fill="#1b1f26" stroke="#55606e"')+R(144,57,3,8,'fill="#999"')+R(155,57,3,8,'fill="#999"')+fan(208,64,22),'POWER SUPPLY');
+  s+=sec('usb',R(132,114,106,96,'rx="3" fill="#1b2330"')+R(146,128,22,10,'rx="1" fill="#0b0f14" stroke="#8796a8"')+R(146,148,22,10,'rx="1" fill="#0b0f14" stroke="#8796a8"')+R(150,131,14,3,'fill="#5aa9ff"')+R(150,151,14,3,'fill="#5aa9ff"')+C(205,135,7,'fill="#7a5ab8"')+C(205,157,7,'fill="#3e9d5a"')+R(146,172,72,26,'rx="2" fill="#0b0f14" stroke="#56657a"')+TX(182,189,'USB · I/O','class="cap" text-anchor="middle"'),'MOTHERBOARD');
+  s+=sec('gpu',R(160,242,40,14,'rx="2" fill="#2f5fc4" stroke="#9fc0ff"')+[0,1,2,3,4].map(i=>C(166+i*7,249,1.2,'fill="#0b0f14"')).join(''),'VIDEO CARD');
+  s+=sec('snd',C(160,302,6,'fill="#7ed957"')+C(180,302,6,'fill="#ff8ac2"')+C(200,302,6,'fill="#5aa9ff"')+[160,180,200].map(x=>C(x,302,2,'fill="#0b0f14"')).join(''),'SOUND CARD');
+  s+=sec('net',R(171,345,20,16,'rx="1" fill="#e6e9ee" stroke="#555"')+R(175,349,12,8,'fill="#333"')+C(198,348,2,'fill="#3ddb7c"')+C(198,358,2,'fill="#ffbe55"'),'NETWORK CARD');
+  // plug heads on top
+  Object.keys(EXT).forEach(k=>{ if(!Object.values(G.conn).flat().includes(k)) return; const [px,py]=PLUGPT[k]; s+=C(px,py,5,`fill="${EXT[k].col}" stroke="#0b0f14" stroke-width="1.5" ${tear?`data-rme="${k}"`:''}`); });
+  if(G.flash && PORT[G.flash]){ const [x,y,w,h]=PORT[G.flash].b; s+=`<g class="spark"><text x="${x+w/2}" y="${y+h/2+12}" font-size="32" text-anchor="middle">⚡</text></g>`; }
+  s+=TX(124,438,'BACK OF THE CASE','class="cap"');
+  return s+'</svg>';
+}
+function bootSVG(n,final){
+  let scr='';
+  if(n===0) scr=R(28,22,226,136,'fill="#000"')+TX(141,95,'NO SIGNAL','fill="#444" font-size="12" font-weight="700" text-anchor="middle"');
+  else if(n===1) scr=R(28,22,226,136,'fill="#000"')+TX(40,44,'⚡ POWER OK · DC 12V / 5V','fill="#3ddb7c" font-size="10" font-family="monospace"')+TX(40,60,'_','fill="#3ddb7c" font-size="12" class="blink"');
+  else if(n===2) scr=R(28,22,226,136,'fill="#000"')+['ROM FIRMWARE v1.0','Checking CPU ....... OK','Checking RAM ....... OK','Checking drives .... OK'].map((t,i)=>TX(40,44+i*15,t,'fill="#cfd6df" font-size="10" font-family="monospace"')).join('')+TX(40,108,'_','fill="#cfd6df" class="blink"');
+  else if(n<5) scr=R(28,22,226,136,'fill="#000"')+TX(141,80,n===3?'Loading OS from hard drive → RAM':'CPU running instructions…','fill="#fff" font-size="10.5" text-anchor="middle"')+R(71,94,140,8,'rx="4" fill="#222"')+R(71,94,n===3?70:126,8,'rx="4" fill="#3ddbb3"');
+  else { scr=R(28,22,226,136,'fill="url(#gScreen)"')+R(28,146,226,12,'fill="#0e1621" opacity=".75"')+C(36,152,4,'fill="#3ddbb3"')+[0,1,2].map(i=>R(48+i*14,148,10,8,'rx="1" fill="#cfd6df" opacity=".7"')).join('')+[0,1,2].map(i=>R(38,32+i*28,18,16,'rx="3" fill="#ffffff" opacity=".8"')).join('');
+    scr+= final ? TX(141,70,'Desktop ready ✓','fill="#fff" font-size="17" font-weight="800" text-anchor="middle"')+TX(141,100,stars(G.buildMiss),'fill="#ffd36b" font-size="28" text-anchor="middle"')+TX(141,124,`Built in ${fmt(G.buildSec)} · ${G.buildMiss} mistake${G.buildMiss===1?'':'s'}`,'fill="#fff" font-size="10.5" text-anchor="middle"')
+                 : R(110,50,110,70,'rx="4" fill="#fff" opacity=".9"')+R(110,50,110,12,'rx="4" fill="#1554a8"')+TX(165,92,'Hello! 👋','fill="#1b2330" font-size="12" font-weight="700" text-anchor="middle"'); }
+  return `<svg class="scene${n>=1?' on':''}" viewBox="0 0 360 220">`+R(18,12,246,154,'rx="8" fill="#1b222c" stroke="#56657a" stroke-width="2"')+scr+R(131,166,20,22,'fill="#56657a"')+R(101,186,80,8,'rx="3" fill="#56657a"')
+   +`<path d="M141 194 C 141 212 288 212 300 196" stroke="#5aa9ff" stroke-width="3" fill="none" opacity="${n>=5?1:.3}"/>`
+   +R(286,40,62,156,'rx="7" fill="url(#gMetal)" stroke="#9aa8b8"')+R(294,52,46,9,'rx="1" fill="#20252d"')+R(294,66,46,9,'rx="1" fill="#20252d"')
+   +C(317,100,10,`fill="#2b3644" stroke="${n>=1?'#3ddbb3':'#8796a8'}" stroke-width="2"`)+`<path d="M317 94 v6 M312 97 a6 6 0 1 0 10 0" stroke="${n>=1?'#3ddbb3':'#8796a8'}" stroke-width="1.6" fill="none"/>`
+   +C(317,122,3,`fill="${n>=1?'#3ddb7c':'#333'}"`)+(n>=3?C(330,122,3,'fill="#ffbe55" class="blink"'):'')+fan(317,166,18)+'</svg>';
+}
+function trayHTML(keys,attr){
+  return `<div class="tray">${keys.map(k=>`<button class="part${G.sel===k?' sel':''}" ${attr}="${k}"><svg viewBox="0 0 80 50">${thumb(k)}</svg>${(INT[k]||EXT[k]).n}</button>`).join('')}</div>`;
+}
+function stars(m){ return m<=1?'★★★':m<=4?'★★☆':'★☆☆'; }
+function rank(m){ return m<=1?'Tech Wizard 🧙':m<=4?'Junior Technician 🛠️':'Screwdriver Rookie 🪛'; }
+
 function renderBuild(){
   if(!G.started){ newGame(); return; }
   const [t,i]=INTRO[G.phase]; $('#bTitle').textContent=t; $('#bIntro').textContent=i;
   setPhase({1:1,2:2,3:3,4:3,5:4,6:4}[G.phase]);
-  $('#gTime').textContent=fmt(G.sec); $('#gMiss').textContent=G.miss;
-  const best=store.get('pclab_best_build',null); $('#gBest').textContent=best?fmt(best.t)+(best.m?` · ${best.m}✗`:''):'–';
-  const A=$('#gArea');
-  if(G.phase===1) A.innerHTML=caseHTML(false)+trayHTML();
-  if(G.phase===2) A.innerHTML=portsHTML(false)+extTrayHTML();
-  if(G.phase===3) A.innerHTML=bootHTML();
-  if(G.phase===4) A.innerHTML=doneHTML();
-  if(G.phase===5) A.innerHTML=portsHTML(true)+'<div style="height:14px"></div>'+caseHTML(true);
-  if(G.phase===6) A.innerHTML=tearDoneHTML();
-  wire();
-}
-function slotHTML(id,tear){
-  const p=G.placed[id], s=SLOT[id];
-  const target = !p && G.sel && INT[G.sel] && !tear ? ' target':'';
-  if(p) return `<div class="slot fill${tear?' rm':''}" data-slot="${id}" ${tear?`data-rm="${id}"`:''}><span class="ic">${INT[p].i}</span><b>${INT[p].n}</b></div>`;
-  return `<div class="slot${target}" data-slot="${id}"><span>${s.l}</span></div>`;
-}
-function caseHTML(tear){
-  const m=G.placed.mobo;
-  let mobo;
-  if(m){
-    mobo=`<div class="slot s-mobo fill${tear?' rm':''}" data-slot="mobo" ${tear?'data-rm="mobo"':''}><b>🟩 Motherboard</b>
-      <div class="board">${slotHTML('cpu',tear)}${slotHTML('ram',tear)}<div class="rom">🔒<b>ROM</b>firmware</div>${slotHTML('exp1',tear)}${slotHTML('exp2',tear)}${slotHTML('exp3',tear)}</div></div>`;
-  } else mobo = tear ? '<div class="slot s-mobo"><span>Empty motherboard tray</span></div>' : slotHTML('mobo').replace('class="slot','class="slot s-mobo');
-  return `<div class="case"><div style="display:grid;gap:8px">${slotHTML('psu',tear)}</div><div class="bays">${slotHTML('bay1',tear)}${slotHTML('bay2',tear)}</div>${mobo}</div>`;
-}
-function trayHTML(){
-  const used=new Set(Object.values(G.placed));
-  const parts=G.trayOrder || (G.trayOrder=shuffle(Object.keys(INT)));
-  return `<div class="tray">${parts.filter(k=>!used.has(k)).map(k=>`<button class="part${G.sel===k?' sel':''}" data-part="${k}"><span class="ic">${INT[k].i}</span>${INT[k].n}</button>`).join('')}</div>`
-   + (Object.keys(G.placed).length===9?'<div style="margin-top:14px"><button class="btn" id="nextPhase" style="width:100%">Close the case &amp; connect devices →</button></div>':'');
-}
-function portsHTML(tear){
-  return `<div class="ports">${Object.keys(PORT).map(k=>{
-    const c=G.conn[k], full=c.length>=PORT[k].cap;
-    const tgt=!tear && G.sel && EXT[G.sel] && !full?' target':'';
-    return `<div class="port${full?' full':''}${tgt}" data-port="${k}"><b style="color:var(--text)">${PORT[k].l}</b><br>${'◻ '.repeat(PORT[k].cap-c.length)}<br>${c.map(e=>`<span class="chip${tear?' rm':''}" ${tear?`data-rme="${e}"`:''}>${EXT[e].i} ${EXT[e].n}</span>`).join('')}</div>`;}).join('')}</div>`;
-}
-function extTrayHTML(){
-  const used=new Set(Object.values(G.conn).flat());
-  const left=(G.extOrder||(G.extOrder=shuffle(Object.keys(EXT)))).filter(k=>!used.has(k));
-  return `<div class="tray">${left.map(k=>`<button class="part${G.sel===k?' sel':''}" data-ext="${k}"><span class="ic">${EXT[k].i}</span>${EXT[k].n}</button>`).join('')}</div>`
-   + (!left.length?'<div style="margin-top:14px"><button class="btn" id="nextPhase" style="width:100%">Press the power button ⏻</button></div>':'');
-}
-function bootHTML(){
-  const done=G.boot.map((k,n)=>`<div class="step done"><span class="n">${n+1}</span>${BOOT[k]}</div>`).join('');
-  const left=G.bootOrder.filter(k=>!G.boot.includes(k)).map(k=>`<button class="step" data-boot="${k}">${BOOT[k]}</button>`).join('');
-  return `<div class="boot">${done}${left?'<p class="muted" style="margin:6px 0 0">What happens next?</p>'+left:''}</div>`;
-}
-function stars(m){ return m<=1?'★★★':m<=4?'★★☆':'★☆☆'; }
-function doneHTML(){
-  return `<div class="screen"><div style="font-size:13px;opacity:.85">Operating system loaded</div><div style="font-size:24px;font-weight:800;margin:6px 0">Desktop ready ✓</div>
-   <div class="stars">${stars(G.buildMiss)}</div><div style="font-size:14px">Built in ${fmt(G.buildSec)} · ${G.buildMiss} mistake${G.buildMiss===1?'':'s'}</div></div><div class="stand"></div>
-   <div class="actions"><button class="btn warn" id="tearBtn">🔧 Tear it down</button><button class="btn alt" id="againBuild">Build again</button></div>`;
-}
-function tearDoneHTML(){
-  const tm=G.miss-G.buildMiss, ts=G.sec-G.buildSec;
-  return `<div class="card" style="text-align:center"><div class="stars" style="font-size:34px;color:var(--warn)">${stars(tm)}</div>
-   <p>Teardown in <b>${fmt(ts)}</b> with <b>${tm}</b> mistake${tm===1?'':'s'}.</p>
-   <p class="muted" style="font-size:14px">Safety order: unplug the power cord → disconnect the outside devices → remove the cards, RAM and CPU → drives and power supply → motherboard last.</p>
-   <button class="btn" id="againBuild" style="width:100%">Build another PC</button></div>`;
+  $('#gTime').textContent=fmt(G.sec); $('#gMiss').textContent=G.miss; $('#gCombo').textContent=G.combo;
+  const best=store.get('pclab_best_build',null); $('#gBest').textContent=best?fmt(best.t):'–';
+  const A=$('#gArea'); let h='';
+  if(G.phase===1){
+    const used=new Set(Object.values(G.placed)); const order=G.trayOrder||(G.trayOrder=shuffle(Object.keys(INT)));
+    h=caseSVG(false)+trayHTML(order.filter(k=>!used.has(k)),'data-part');
+    if(Object.keys(G.placed).length===9) h+='<div style="margin-top:14px"><button class="btn" id="nextPhase" style="width:100%">🔩 Close the case &amp; connect devices →</button></div>';
+  }
+  if(G.phase===2){
+    const used=new Set(Object.values(G.conn).flat()); const left=(G.extOrder||(G.extOrder=shuffle(Object.keys(EXT)))).filter(k=>!used.has(k));
+    h=backSVG(false)+trayHTML(left,'data-ext');
+    if(!left.length) h+='<div style="margin-top:14px"><button class="btn" id="nextPhase" style="width:100%">⏻ Press the power button</button></div>';
+  }
+  if(G.phase===3){
+    h=bootSVG(G.boot.length)+`<div class="boot">${G.boot.map((k,n)=>`<div class="step done"><span class="n">${n+1}</span>${BOOT[k]}</div>`).join('')}
+      <p class="muted" style="margin:6px 0 0">What happens next?</p>${G.bootOrder.filter(k=>!G.boot.includes(k)).map(k=>`<button class="step" data-boot="${k}">${BOOT[k]}</button>`).join('')}</div>`;
+  }
+  if(G.phase===4){
+    h=bootSVG(5,true)+`<div class="card" style="text-align:center;margin-top:12px"><div class="muted">Your rank</div><div class="rank">${rank(G.buildMiss)}</div>
+      <div class="muted" style="font-size:14px">Best combo: 🔥 x${G.bestCombo}</div>
+      <div class="actions"><button class="btn warn" id="tearBtn">🔧 Tear it down</button><button class="btn alt" id="againBuild">Build again</button></div></div>`;
+  }
+  if(G.phase===5) h=backSVG(true)+'<div style="height:12px"></div>'+caseSVG(true);
+  if(G.phase===6){
+    const tm=G.miss-G.buildMiss, ts=G.sec-G.buildSec;
+    h=`<div class="card" style="text-align:center"><div style="font-size:54px">🧰</div><div style="font-size:34px;color:var(--warn)">${stars(tm)}</div>
+      <div class="rank">${tm<=1?'Safety Champion 🦺':tm<=4?'Careful Technician 🔧':'Spark Magnet ⚡'}</div>
+      <p>Teardown in <b>${fmt(ts)}</b> with <b>${tm}</b> mistake${tm===1?'':'s'}.</p>
+      <p class="muted" style="font-size:14px">Safety order: unplug the power cord → disconnect the outside devices → remove the cards, RAM and CPU → drives and power supply → motherboard last.</p>
+      <button class="btn" id="againBuild" style="width:100%">Build another PC 🔁</button></div>`;
+  }
+  A.innerHTML=h; G.fresh=null; G.flash=null; wire();
 }
 function wire(){
   const A=$('#gArea');
-  A.querySelectorAll('[data-part]').forEach(b=>b.onclick=()=>{ startClock(); G.sel=G.sel===b.dataset.part?null:b.dataset.part; if(G.sel) say(`${INT[G.sel].i} <b>${INT[G.sel].n}</b> picked up. Now tap where it goes.`); renderBuild(); });
-  A.querySelectorAll('[data-ext]').forEach(b=>b.onclick=()=>{ startClock(); G.sel=G.sel===b.dataset.ext?null:b.dataset.ext; if(G.sel) say(`${EXT[G.sel].i} <b>${EXT[G.sel].n}</b> picked up. Which port does it plug into?`); renderBuild(); });
+  A.querySelectorAll('[data-part]').forEach(b=>b.onclick=()=>{ startClock(); sfx('pick'); G.sel=G.sel===b.dataset.part?null:b.dataset.part;
+    if(G.sel) say(`Got the <b>${INT[G.sel].n}</b>! Where does it go? The glowing spots are free.`,'','wow'); renderBuild(); });
+  A.querySelectorAll('[data-ext]').forEach(b=>b.onclick=()=>{ startClock(); sfx('pick'); G.sel=G.sel===b.dataset.ext?null:b.dataset.ext;
+    if(G.sel) say(`Holding the <b>${EXT[G.sel].n}</b>. Which port on the back does it plug into?`,'','wow'); renderBuild(); });
   if(G.phase===1) A.querySelectorAll('[data-slot]').forEach(s=>s.onclick=e=>{ e.stopPropagation(); place(s.dataset.slot); });
   if(G.phase===2) A.querySelectorAll('[data-port]').forEach(p=>p.onclick=()=>plug(p.dataset.port));
   A.querySelectorAll('[data-boot]').forEach(b=>b.onclick=()=>bootStep(+b.dataset.boot));
@@ -625,62 +802,69 @@ function wire(){
     A.querySelectorAll('[data-rme]').forEach(c=>c.onclick=e=>{e.stopPropagation(); removeExt(c.dataset.rme);});
     A.querySelectorAll('[data-rm]').forEach(c=>c.onclick=e=>{e.stopPropagation(); removeInt(c.dataset.rm);});
   }
-  const np=$('#nextPhase'); if(np) np.onclick=()=>{ G.sel=null; G.phase++; say(G.phase===2?'Case closed! Now plug in the outside devices. Each one belongs to a specific port.':'Put the start-up steps in order. Tap the step that happens first.'); renderBuild(); };
-  const tb=$('#tearBtn'); if(tb) tb.onclick=()=>{ G.phase=5; G.powered=true; say('The PC is still plugged in and running. Tap parts to remove them, starting with the safest first move.'); startClock(); renderBuild(); };
-  const ab=$('#againBuild'); if(ab) ab.onclick=newGame;
+  const np=$('#nextPhase'); if(np) np.onclick=()=>{ G.sel=null; G.phase++; sfx('ok');
+    if(G.phase===2) say('Case closed! 🔩 I’ve spun it around so you can see the back. Plug every device into its port.','','happy');
+    else say('Moment of truth… 😬 Tap the start-up steps in the right order to boot it!','','wow');
+    renderBuild(); window.scrollTo({top:$('#build').offsetTop-120,behavior:'smooth'}); };
+  const tb=$('#tearBtn'); if(tb) tb.onclick=()=>{ G.phase=5; G.powered=true; G.combo=0; sfx('pick');
+    say('Teardown time! 🔧 The PC is still <b>plugged in and running</b>. What’s the safest first move?','','wow'); startClock(); renderBuild(); };
+  const ab=$('#againBuild'); if(ab) ab.onclick=()=>{ sfx('pick'); newGame(); };
 }
 function place(slotId){
-  if(!G.sel){ say('Pick a part from the tray first.'); return; }
+  if(!G.sel){ say('Pick a part from the tray below first! 👇','','idle'); return; }
   const part=INT[G.sel], s=SLOT[slotId];
-  if(part.decoy){ oops(part.decoy); G.sel=null; renderBuild(); $('#gMsg').classList.add('bad'); return; }
-  if(G.placed[slotId]){ say('That spot is already used. Try another one.'); return; }
+  if(part.decoy){ const d=G.sel; G.sel=null; G.trayOrder=G.trayOrder.filter(k=>k!==d); oops(part.decoy+' I’ll put it back on the desk.',slotId); return; }
+  if(G.placed[slotId]){ say('That spot is already taken. Try another one!','','idle'); return; }
   if(part.fit!==s.fit){
     let t=`The ${part.n} doesn’t go in the ${s.l.toLowerCase()}. `+WRONG[part.fit];
     if(slotId==='mobo' && ['cpu','ram','exp'].includes(part.fit)) t=`The ${part.n} sits <i>on</i> the motherboard, so install the motherboard first!`;
-    oops(t); return;
+    oops(t,slotId); return;
   }
-  G.placed[slotId]=G.sel; G.sel=null;
+  G.placed[slotId]=G.sel; G.fresh=slotId; G.sel=null; sfx('ok');
   const n=Object.keys(G.placed).length;
-  say(`✅ ${part.i} <b>${part.n}</b> installed. ${part.fact}`+(n===9?'<br><b>All 9 parts are in!</b> Leave the printer, scanner and barcode reader outside.':''),'good');
+  good(`<b>${part.n}</b> installed. ${part.fact}`+(n===9?'<br><b>All 9 parts are in! 🎉</b>':` <span class="muted">(${n}/9)</span>`));
+  if(n===9) sfx('combo');
   renderBuild();
 }
 function plug(portId){
-  if(!G.sel){ say('Pick a device from the tray first.'); return; }
+  if(!G.sel){ say('Pick a device from the tray below first! 👇','','idle'); return; }
   const d=EXT[G.sel];
-  if(G.conn[portId].length>=PORT[portId].cap){ say('That port is full.'); return; }
-  if(d.port!==portId){ oops(`The ${d.n.toLowerCase()} doesn’t plug into the ${PORT[portId].l.toLowerCase()}. ${PORT[d.port].why}`); return; }
-  G.conn[portId].push(G.sel); G.sel=null;
-  say(`✅ ${d.i} <b>${d.n}</b> connected. ${PORT[portId].why}`,'good'); renderBuild();
+  if(G.conn[portId].length>=PORT[portId].cap){ say('That port is full!','','idle'); return; }
+  if(d.port!==portId){ oops(`The ${d.n.toLowerCase()} doesn’t plug into the ${PORT[portId].l.toLowerCase()}. ${PORT[d.port].why}`,portId); return; }
+  G.conn[portId].push(G.sel); G.fresh=G.sel; G.sel=null; sfx('plug');
+  good(`<b>${d.n}</b> connected! ${PORT[portId].why}`); renderBuild();
 }
 function bootStep(k){
   const next=G.boot.length;
-  if(k!==next){ oops('Not yet! Think it through: power first → firmware starts things → the OS goes into memory → the CPU runs it → a picture appears.'); return; }
+  if(k!==next){ G.miss++; G.combo=0; sfx('bad'); say('<b>Bzzt! Not yet. 😵</b> Think it through: power first → firmware starts things → the OS goes into memory → the CPU runs it → a picture appears.','bad','oops'); renderBuild();
+    const sc=document.querySelector('#gArea .scene'); if(sc) sc.classList.add('shake'); return; }
   G.boot.push(k);
   if(G.boot.length===BOOT.length){
-    stopClock(); G.buildMiss=G.miss; G.buildSec=G.sec; G.phase=4;
+    stopClock(); G.buildMiss=G.miss; G.buildSec=G.sec; G.phase=4; sfx('win'); confetti();
     const best=store.get('pclab_best_build',null);
-    if(!best || G.sec<best.t) store.set('pclab_best_build',{t:G.sec,m:G.miss});
-    say('🎉 Beep! The computer booted successfully.','good');
-  } else say(`✅ Step ${next+1} done.`,'good');
+    const rec = !best || G.sec<best.t; if(rec) store.set('pclab_best_build',{t:G.sec,m:G.miss});
+    say(`🎉 <b>IT’S ALIVE!</b> The computer booted.`+(rec?' 🏆 New best time!':''),'good','wow');
+  } else { sfx(next===0?'beep':'step'); say(['Beep! ⚡ The power is flowing and the fans are spinning!','The ROM firmware is checking the hardware… 🔍','The operating system is loading into RAM… ⏳','The CPU is crunching instructions! 🧠'][next],'good','happy'); }
   renderBuild();
 }
 function extLeft(){ return Object.values(G.conn).flat().length; }
 function removeExt(id){
-  if(G.powered && id!=='pwr'){ oops('Safety first! Always unplug the power cord before you disconnect or touch anything else.'); return; }
+  if(G.powered && id!=='pwr'){ oops('Safety first! Always unplug the power cord before you disconnect or touch anything else.',EXT[id].port); return; }
   for(const k in G.conn) G.conn[k]=G.conn[k].filter(x=>x!==id);
-  if(id==='pwr'){ G.powered=false; say('✅ Power cord unplugged. Now it’s safe. Disconnect the other devices.','good'); }
-  else say(`✅ ${EXT[id].n} disconnected.`,'good');
+  sfx('plug');
+  if(id==='pwr'){ G.powered=false; good('<b>Power cord unplugged.</b> 🔌 Now it’s safe. Disconnect the other devices.'); }
+  else good(`<b>${EXT[id].n}</b> disconnected.`);
   checkTear(); renderBuild();
 }
 function removeInt(slotId){
-  if(G.powered){ oops('Never open a computer while it’s plugged in! Unplug the power cord first.'); return; }
-  if(extLeft()){ oops('Disconnect all the outside devices before you open the case.'); return; }
-  if(slotId==='mobo' && ['cpu','ram','exp1','exp2','exp3'].some(s=>G.placed[s])){ oops('The CPU, RAM and cards are still mounted on the motherboard. Remove them first.'); return; }
-  const p=G.placed[slotId]; delete G.placed[slotId];
-  say(`✅ ${INT[p].n} removed.`,'good'); checkTear(); renderBuild();
+  if(G.powered){ oops('Never open a computer while it’s plugged in! ⚡ Unplug the power cord first.',slotId); return; }
+  if(extLeft()){ oops('Disconnect all the outside devices before you open the case.',slotId); return; }
+  if(slotId==='mobo' && ['cpu','ram','exp1','exp2','exp3'].some(s=>G.placed[s])){ oops('The CPU, RAM and cards are still mounted on the motherboard. Remove them first!',slotId); return; }
+  const p=G.placed[slotId]; delete G.placed[slotId]; sfx('unscrew');
+  good(`<b>${INT[p].n}</b> removed. 🪛`); checkTear(); renderBuild();
 }
 function checkTear(){
-  if(!extLeft() && !Object.keys(G.placed).length){ stopClock(); G.phase=6; say('🔧 Teardown complete. Every part is out safely!','good'); }
+  if(!extLeft() && !Object.keys(G.placed).length){ stopClock(); G.phase=6; sfx('win'); confetti(); say('🔧 <b>Teardown complete!</b> Every part is out safely. You’re a real technician!','good','wow'); }
 }
 </script>
 </body>
