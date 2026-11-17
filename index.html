@@ -81,6 +81,43 @@ table.ab td:first-child{font-weight:800;color:var(--accent2);width:60px}
 .opts.pics .opt{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;text-align:center;font-size:14px;font-weight:600}
 .opts.pics .opt svg{width:100%;max-width:130px;height:auto}
 .opts.pics.hide .opt span{visibility:hidden}
+nav button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px!important;padding:7px 2px!important}
+nav button span{font-size:18px}
+.pill{background:var(--warn);color:#0e1621;border:0;border-radius:12px;padding:6px 10px;font-weight:800;font-size:15px;line-height:1.1;text-align:center}
+.pill small{font-size:10px;font-weight:700}
+.pstep.now{border-color:var(--warn);box-shadow:0 0 0 2px rgba(255,190,85,.35)}
+.pstep.done{opacity:.6}
+.nowtag{background:var(--warn);color:#0e1621;border-color:var(--warn)}
+.seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;border-radius:9px;padding:10px;font-weight:700;color:var(--muted)}
+.seg button.on{background:var(--panel2);color:var(--text)}
+.flashwrap{perspective:1000px}
+.flash{position:relative;height:330px;transform-style:preserve-3d;transition:transform .5s;cursor:pointer}
+.flash.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center}
+.face.front{background:radial-gradient(circle at 50% 35%,#1f3048,#121c28)}
+.face.back{background:linear-gradient(160deg,#173b2b,#13263a);transform:rotateY(180deg)}
+.face svg{width:min(260px,80%);height:auto}
+.face p{font-size:18px;line-height:1.5;margin:0}
+.fq{font-size:18px;font-weight:700}
+.fname{font-size:24px;font-weight:800}
+.gcard{display:flex;align-items:center;gap:14px;width:100%;text-align:left;font-size:15px}
+.ge{font-size:40px}
+.sortitem{text-align:center}
+.bins{display:grid;gap:9px;grid-template-columns:1fr 1fr}
+.bins.b3{grid-template-columns:1fr 1fr 1fr}
+.bin{background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:15px}
+.bin small{color:var(--muted);font-size:12px}
+.bin.right{border-color:var(--good);background:#173b2b}.bin.wrong{border-color:var(--bad);background:#3f1d22}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.mcard{aspect-ratio:1/1;border-radius:12px;border:2px solid var(--line);background:linear-gradient(135deg,#1f3550,#16212f);display:flex;align-items:center;justify-content:center;font-size:13px;padding:6px;transition:transform .2s}
+.mcard span{font-size:34px;color:var(--accent2);font-weight:800}
+.mcard.up{background:var(--panel2);border-color:var(--accent2);transform:scale(1.03)}
+.mcard.got{border-color:var(--good);background:#173b2b;transform:none}
+.mcard svg{width:100%;height:auto}
+.clue{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-top:8px;font-size:16px;animation:pop .35s}
+#toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,140%);background:var(--warn);color:#0e1621;font-weight:700;padding:12px 18px;border-radius:14px;z-index:70;transition:.35s;max-width:92vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#toast.on{transform:translate(-50%,0)}
 /* drawer */
 .drawer{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:none}
 .drawer.on{display:block}
@@ -146,24 +183,43 @@ table.ab td:first-child{font-weight:800;color:var(--accent2);width:60px}
 <header>
   <div class="top">
     <div class="logo">PC</div>
-    <div><h1>PC Lab</h1><small>Chapter 7 · Desktop Teardown</small></div>
+    <div class="grow"><h1>PC Lab</h1><small>Chapter 7 · Desktop Teardown</small></div><button id="classPill" class="pill" style="display:none"></button>
   </div>
   <nav>
-    <button data-view="notes" class="on">📘 Notes</button>
-    <button data-view="test">📝 Practice Test</button>
-    <button data-view="build">🔧 Build-a-PC</button>
+    <button data-view="plan" class="on"><span>🗓️</span>Plan</button>
+    <button data-view="learn"><span>📘</span>Learn</button>
+    <button data-view="games"><span>🎮</span>Games</button>
+    <button data-view="test"><span>📝</span>Test</button>
+    <button data-view="build"><span>🔧</span>Build</button>
   </nav>
 </header>
 
 <main>
   <!-- NOTES -->
-  <section id="notes" class="view on">
+  <section id="plan" class="view on">
     <div class="card">
-      <h2>Quick notes</h2>
-      <p class="muted" style="margin:0">Everything from Chapter 7 on one page. The same notes open as a side sheet during the practice test.</p>
+      <h2>Class plan · 1 hr 15 min ⏱</h2>
+      <p class="muted" style="margin-top:0">Chapter 7: Desktop Teardown. Do the 9 steps in order. Tap ▶ to open each activity.</p>
+      <div class="row" style="justify-content:space-between;margin-bottom:8px"><b style="font-size:26px" id="cTime">0:00</b><span class="muted">of 75:00</span></div>
+      <div class="bar"><i id="cBar" style="width:0"></i></div>
+      <div class="actions" style="margin-top:4px"><button class="btn" id="cStart">▶ Start class timer</button><button class="btn alt" id="cReset" style="flex:.5">Reset</button></div>
     </div>
-    <div class="notes-grid" id="notesGrid"></div>
+    <div id="planList"></div>
   </section>
+
+  <section id="learn" class="view">
+    <div class="seg"><button data-sub="cards" class="on">🃏 Flashcards</button><button data-sub="notes">📘 Notes</button></div>
+    <div id="lCards">
+      <div class="row" style="margin-bottom:12px"><label class="f">Cards
+        <select id="deckSel"><option value="all">All cards</option><option value="parts">Computer parts</option><option value="ideas">Big ideas &amp; computer types</option></select></label></div>
+      <div class="flashwrap"><div class="flash" id="flash"><div class="face front" id="fFront"></div><div class="face back" id="fBack"></div></div></div>
+      <div class="row" style="justify-content:center;margin:10px 0"><span class="muted" id="fCount"></span></div>
+      <div class="actions"><button class="btn alt" id="fPrev">◀ Back</button><button class="btn alt" id="fShuf" style="flex:.6">🔀</button><button class="btn" id="fNext">Next ▶</button></div>
+    </div>
+    <div id="lNotes" style="display:none"><div class="notes-grid" id="notesGrid"></div></div>
+  </section>
+
+  <section id="games" class="view"><div id="gPlay"></div></section>
 
   <!-- TEST -->
   <section id="test" class="view">
@@ -240,6 +296,7 @@ table.ab td:first-child{font-weight:800;color:var(--accent2);width:60px}
 </div></div>
 
 <canvas id="confetti"></canvas>
+<div id="toast"></div>
 <svg width="0" height="0" style="position:absolute"><defs>
 <linearGradient id="gMetal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7dee7"/><stop offset="1" stop-color="#8c99a8"/></linearGradient>
 <linearGradient id="gPcb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16603a"/><stop offset="1" stop-color="#0d4429"/></linearGradient>
@@ -259,56 +316,50 @@ const store = {
 };
 
 /* ---------- tabs ---------- */
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
-  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.view));
-  
-  if(b.dataset.view==='build' && !G.started) renderBuild();
-  window.scrollTo(0,0);
-});
+
 
 /* ---------- notes content ---------- */
 const NOTES = [
-  {t:'Hardware · Software · Firmware', items:[
-    ['Hardware','Physical parts you can touch: the computer itself, processor and memory chips, input/output devices, disks, modems, cables.'],
-    ['Software','The operating system and applications. It gives the hardware instructions to carry out. Examples: Windows XP, Microsoft Office, Adobe Acrobat Reader, WordPerfect.'],
-    ['Firmware','Software written into chips you can touch. Example: the ROM (Read Only Memory) chip, which always has software in it.'],
-    ['Operating system','Coordinates hardware, software applications and the user. Examples: DOS, Windows 98, NT Workstation, 2000, XP, 7, 8, 10 and Unix.']]},
-  {t:'Computer models', items:[
-    ['Desktop','Sits horizontally on top of a desk.'],
-    ['Tower','Sits vertically under a desk.'],
-    ['Laptop','Portable.'],
-    ['PDA','Handheld “electronic organizer” for schedules, contacts, notes and e-mail.']]},
-  {t:'Inside the case', items:[
-    ['Computer case','Contains the major components and protects them.'],
-    ['Power supply','Converts AC from the wall outlet to DC for the parts. Has a fan to keep the computer cool.'],
-    ['Motherboard','The main and largest circuit board. All parts connect to it or communicate through it.'],
-    ['CPU (processor)','Interprets and executes program instructions. Manages input, output and storage devices.'],
-    ['RAM','Temporary memory chips on the motherboard near the CPU. Holds data and programs while they are in use, and needs power.'],
-    ['Hard drive / hard disk','Magnetic storage that keeps files inside the computer.'],
-    ['CD drive / DVD drive','Reads discs. A DVD drive also plays music and video DVDs.']]},
-  {t:'Cards and connections', items:[
-    ['Video card','Connects the computer to the monitor.'],
-    ['Sound card','Connects the speakers and microphone.'],
-    ['Network card','Connects the computer to the network with special cables.'],
-    ['Modem','Where the computer connects to the phone line.']]},
-  {t:'Input devices', items:[
-    ['Keyboard','Enter information and give commands.'],
-    ['Mouse','Controls the on-screen pointer: point, click, double-click and drag.'],
-    ['Touchpad','A pressure- and motion-sensitive device used in place of a mouse.'],
-    ['Barcode reader','Turns printed bars into a number. Shops use it to enter prices quickly.'],
-    ['Scanner','Puts pictures into the computer.'],
-    ['Microphone','Records sound as input.']]},
-  {t:'Output and storage', items:[
-    ['Monitor','Output: a display screen.'],
-    ['Printer','Output: a hard copy on paper.'],
-    ['Speakers','Output: voice, music and other sounds.'],
-    ['CD','Compact Disk: optical storage.'],
-    ['Hard disk','Magnetic storage.']]},
-  {t:'DOS and Windows', items:[
-    ['DOS','Disk Operating System. Connects the hardware with the programs you run.'],
-    ['MS-DOS','Microsoft’s DOS. A command line interface. Version 1.0 came out in 1981 for IBM computers.'],
-    ['Windows','Microsoft’s family of operating systems with a graphical user interface (GUI).']]},
+  {t:'💡 Hardware · Software · Firmware', items:[
+    ['Hardware 🖐️','The parts you can touch. Examples: the computer, chips, keyboard, disks, cables.'],
+    ['Software 💿','Programs. They tell the hardware what to do. Examples: Windows XP, Microsoft Office, Adobe Acrobat Reader, WordPerfect.'],
+    ['Firmware 🔒','Software inside a chip. You can touch the chip. Example: the ROM (Read Only Memory) chip.'],
+    ['Operating system (OS) 🪟','The most important software. It connects the hardware, the programs and you. Examples: DOS, Windows 98, NT, 2000, XP, 7, 8, 10 and Unix.']]},
+  {t:'🖥️ Types of computer', items:[
+    ['Desktop','It lies flat on top of the desk.'],
+    ['Tower','It stands up under the desk.'],
+    ['Laptop','You can carry it (portable).'],
+    ['PDA','Small. You hold it in your hand. Like an electronic organizer for contacts, notes and e-mail.']]},
+  {t:'🧩 Inside the case', items:[
+    ['Computer case','The box. It holds and protects the parts.'],
+    ['Power supply','Changes AC power (from the wall) into DC power (for the computer). It has a fan to keep the computer cool.'],
+    ['Motherboard','The main and biggest board. All parts connect to it.'],
+    ['CPU (processor)','The “brain”. It runs the program instructions.'],
+    ['RAM','Short-time memory, near the CPU. It forgets when the power is off.'],
+    ['Hard drive (hard disk)','Saves your files. Magnetic storage.'],
+    ['CD drive / DVD drive','Read discs. A DVD drive also plays movie DVDs.']]},
+  {t:'🔌 Cards and connections', items:[
+    ['Video card','Connects the monitor.'],
+    ['Sound card','Connects the speakers and the microphone.'],
+    ['Network card','Connects the computer to the network with a cable.'],
+    ['Modem','Connects the computer to the phone line.']]},
+  {t:'⬅️ Input devices (information goes IN)', items:[
+    ['Keyboard','Type letters and give commands.'],
+    ['Mouse','Move the pointer. Click, double-click and drag.'],
+    ['Touchpad','Use your finger instead of a mouse.'],
+    ['Barcode reader','Reads the lines (bars) on products in shops.'],
+    ['Scanner','Puts paper pictures into the computer.'],
+    ['Microphone','Records sound and voice.']]},
+  {t:'➡️ Output devices and 💾 storage', items:[
+    ['Monitor','Output: the screen.'],
+    ['Printer','Output: prints on paper (hard copy).'],
+    ['Speakers','Output: music and sound.'],
+    ['CD','Storage: Compact Disk. Optical (uses light).'],
+    ['Hard disk','Storage: magnetic.']]},
+  {t:'⌨️ DOS and Windows', items:[
+    ['DOS','Disk Operating System. It connects the hardware with your programs.'],
+    ['MS-DOS','From Microsoft. You type commands (command line). Version 1.0 came in 1981 for IBM computers.'],
+    ['Windows','From Microsoft. It has a GUI: pictures, windows and icons you click.']]},
 ];
 const ABBR = [
   {a:'CPU',f:'Central Processing Unit',fake:['Computer Power Unit','Central Program Utility','Control Processing Unit']},
@@ -382,6 +433,33 @@ const TF = [
   ['The ROM chip is firmware.',true,'True. Firmware = software inside a chip.'],
   ['A laptop is portable.',true,'True. You can carry a laptop.'],
   ['The CPU is the “brain” of the computer.',true,'True. The CPU runs the instructions.'],
+  ['A scanner is an input device.',true,'True. It puts pictures IN to the computer.'],
+  ['Speakers are an input device.',false,'False. Speakers are output.'],
+  ['A tower sits on top of the desk.',false,'False. A tower stands under the desk.'],
+  ['The sound card connects the monitor.',false,'False. The video card connects the monitor.'],
+  ['Unix is an operating system.',true,'True. Unix is an operating system.'],
+  ['The mouse controls the pointer on the screen.',true,'True. You point and click with it.'],
+  ['The modem connects the computer to the phone line.',true,'True.'],
+  ['Windows uses only typed commands.',false,'False. Windows has a GUI with pictures and windows.'],
+];
+const FILL = [
+  ['The ____ changes AC to DC.','Power supply',['CPU','RAM','Monitor']],
+  ['The ____ is the brain of the computer.','CPU',['RAM','Printer','Mouse']],
+  ['The ____ is the biggest board.','Motherboard',['Video card','Sound card','Network card']],
+  ['____ forgets everything when the power is off.','RAM',['Hard drive','CD','ROM chip']],
+  ['The ____ keeps your files.','Hard drive',['RAM','CPU','Speakers']],
+  ['You see your work on the ____.','Monitor',['Printer','Keyboard','Modem']],
+  ['The ____ connects the computer to the phone line.','Modem',['Sound card','Video card','Mouse']],
+  ['A CD is ____ storage.','optical',['magnetic','paper','firmware']],
+  ['A hard disk is ____ storage.','magnetic',['optical','paper','firmware']],
+  ['MS-DOS 1.0 came out in ____.','1981',['1995','2001','1970']],
+  ['Windows has a ____ (pictures and windows).','GUI',['CPU','ROM','PDA']],
+  ['The ____ holds and protects the parts inside.','Computer case',['Monitor','Mouse','Printer']],
+  ['Software gives ____ to the hardware.','instructions',['power','paper','sound']],
+  ['The ____ connects the hardware, the programs and the user.','operating system',['printer','power supply','mouse']],
+  ['A ____ is small. You hold it in your hand.','PDA',['Tower','Desktop','Modem']],
+  ['The ROM chip is an example of ____.','firmware',['software','an output device','a monitor']],
+  ['RAM is on the ____, near the CPU.','motherboard',['monitor','keyboard','printer']],
 ];
 const SCEN = [
   ['You want to print your homework on paper. What do you use?','Printer',['Scanner','Monitor','Speakers'],'The printer puts your work on paper.'],
@@ -416,6 +494,7 @@ function buildPool(){
   G.connect = CONNECT.map(([d,c])=>{const q=mc('Connections',`Where do you connect <b>${d}</b>?`,c,[],'Picture → video. Sound → sound. Network → network. Phone → modem.',`${d[0].toUpperCase()+d.slice(1)} → ${c}.`); q.options=['Video card','Sound card','Network card','Modem']; return q;});
   G.models = MODELS.map(([d,m])=>{const q=mc('Computer types',`This computer ${d}. What is it?`,m,[],'Desktop, tower, laptop or PDA.',`${m}: it ${d}.`); q.options=['Desktop','Tower','Laptop','PDA']; return q;});
   G.tf = TF.map(([s,v,e])=>({kind:'mc',topic:'True or false',prompt:s,answer:v?'True':'False',options:['True','False'],hint:'Look in the Notes sheet.',explain:e}));
+  G.fill = FILL.map(([p,a,d])=>mc('Fill the gap',p.replace('____','<b>_____</b>'),a,d,'Read the sentence. Which word fits?',p.replace('____','<b>'+a+'</b>')));
   G.scen = SCEN.map(([p,a,d,e])=>mc('Everyday use',p,a,d,'Think: what do you use for this?',e));
   const byCat = {}; DEVTYPE.forEach(([n,c])=>(byCat[c]=byCat[c]||[]).push(n));
   G.odd = [];
@@ -454,7 +533,7 @@ function addPics(G){
   G.odd.forEach(q=>q.optPics=true);
 }
 function buildTest(n){
-  const G = buildPool(); addPics(G); const W={picName:3,pickPic:3,scen:2,connect:2};
+  const G = buildPool(); addPics(G); const W={picName:3,pickPic:3,scen:2,connect:2,fill:2};
   const keys = shuffle(Object.keys(G).flatMap(k=>Array(W[k]||1).fill(k)));
   const lists = {}; Object.keys(G).forEach(k=>{ lists[k]=shuffle(G[k]); });
   const out=[], seen=new Set(); let i=0;
@@ -537,6 +616,265 @@ function finish(timeout){
   $('#eReview').innerHTML=T.results.map((r,k)=>`<li><span class="${r.ok?'ok':'no'}">${r.ok?'✓':'✗'} Q${k+1}</span> · <span class="muted">${r.q.topic}</span><br>${r.q.pic?`<svg viewBox="0 0 80 50" style="width:70px;height:44px;vertical-align:middle;margin-right:6px">${pic(r.q.pic)}</svg>`:''}${r.q.prompt.replace(/<br>.*/,'')} ${r.q.prompt.includes('<br>')?'<span class="muted">'+r.q.prompt.split('<br>')[1]+'</span>':''}<br>Your answer: <b>${r.given==null?'(no answer)':r.given}</b>${r.ok?'':` · Correct: <b>${r.q.answer}</b>`}${r.ok&&r.pts<1?' <span class="muted">(hint used)</span>':''}</li>`).join('');
   showT('tEnd'); window.scrollTo(0,0);
 }
+
+/* ---------- navigation ---------- */
+function go(view,sub,opt){
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.view===view));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id===view));
+  if(view==='build' && !G.started) renderBuild();
+  if(view==='learn') learnTab(sub||LEARN.tab, opt);
+  if(view==='games'){ if(sub) startGame(sub); else gameMenu(); }
+  if(view==='test' && opt && (!T || T.over)){ $('#qCount').value=String(opt.n); $('#qTime').value=String(opt.m); showT('tStart'); }
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.view));
+
+/* ---------- class plan + timer ---------- */
+const PLAN = [
+  {a:0,b:5,t:'Warm-up 👋',d:'Look at the pictures on the flashcards. Say the name <b>before</b> you flip the card.',tip:'Ask the class: “What is inside a computer?”',go:['learn','cards',{deck:'all'}],btn:'Open flashcards'},
+  {a:5,b:15,t:'Big ideas 💡',d:'Hardware, software and firmware. Operating systems. Types of computer (desktop, tower, laptop, PDA).',tip:'Ask: “Can you touch Windows?” (No: it is software.)',go:['learn','notes'],btn:'Open notes'},
+  {a:15,b:25,t:'Parts of the computer 🧩',d:'Learn the parts inside the case, the cards, and the input and output devices.',tip:'Students work in pairs. One reads the card, one answers.',go:['learn','cards',{deck:'parts'}],btn:'Open part cards'},
+  {a:25,b:32,t:'Game: Sort It! 🗂️',d:'Put each item in the right box: input, output, storage or inside part. Then round 2: hardware or software?',tip:'Who gets the biggest streak? 🔥',go:['games','sort'],btn:'Play Sort It!'},
+  {a:32,b:45,t:'Build-a-PC 🔧',d:'Install the parts, connect the devices and turn the computer on.',tip:'Watch out for the trick parts (printer, scanner, barcode reader)!',go:['build'],btn:'Start building'},
+  {a:45,b:52,t:'Desktop teardown 🪛',d:'Take the computer apart safely. What do you do first?',tip:'Discuss: why do we unplug the power first?',go:['build'],btn:'Go to teardown'},
+  {a:52,b:60,t:'Game: Memory Match 🧠',d:'Find the pairs: a picture and its name.',tip:'Fewest moves wins!',go:['games','match'],btn:'Play Memory Match'},
+  {a:60,b:65,t:'Game: Who Am I? 🕵️',d:'Read the clues and guess the part. Fewer clues = more points.',tip:'Read the clues out loud together.',go:['games','who'],btn:'Play Who Am I?'},
+  {a:65,b:75,t:'Practice test 📝',d:'10 questions in 10 minutes. Then look at your mistakes.',tip:'Collect the scores at the end of class.',go:['test',null,{n:10,m:10}],btn:'Open the test'},
+];
+const CL = {sec:0,run:false,timer:null,step:-1};
+function stepAt(s){ const m=s/60; return PLAN.findIndex(p=>m>=p.a && m<p.b); }
+function renderPlan(){
+  const cur = CL.sec>0||CL.run ? stepAt(CL.sec) : -1;
+  $('#planList').innerHTML = PLAN.map((p,k)=>{
+    const now=k===cur, done=CL.sec/60>=p.b;
+    const left = now ? fmt(Math.ceil(p.b*60-CL.sec)) : '';
+    return `<div class="card pstep${now?' now':''}${done?' done':''}">
+      <div class="row" style="justify-content:space-between"><span class="tag">${fmt(p.a*60)}–${fmt(p.b*60)} · ${p.b-p.a} min</span>${now?`<span class="tag nowtag">NOW · ${left} left</span>`:done?'<span class="tag">✓ done</span>':''}</div>
+      <h3 style="margin:10px 0 6px;color:var(--text);font-size:17px">${k+1}. ${p.t}</h3>
+      <p style="margin:0 0 6px">${p.d}</p>
+      <p class="muted" style="margin:0 0 10px;font-size:13px">👩‍🏫 ${p.tip}</p>
+      <button class="btn${now?'':' alt'}" data-step="${k}" style="width:100%">▶ ${p.btn}</button></div>`;
+  }).join('');
+  $('#planList').querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>{ const g=PLAN[+b.dataset.step].go; go(g[0],g[1],g[2]); });
+  $('#cTime').textContent=fmt(CL.sec); $('#cBar').style.width=Math.min(100,CL.sec/4500*100)+'%';
+  $('#cStart').textContent = CL.run?'⏸ Pause':CL.sec?'▶ Continue':'▶ Start class timer';
+  const pill=$('#classPill');
+  if(CL.run||CL.sec){ pill.style.display='block'; pill.innerHTML=`⏱ ${fmt(CL.sec)}<br><small>${cur>=0?'Step '+(cur+1)+' · '+fmt(Math.ceil(PLAN[cur].b*60-CL.sec))+' left':'Class over'}</small>`; }
+  else pill.style.display='none';
+}
+$('#cStart').onclick=()=>{
+  CL.run=!CL.run;
+  if(CL.run){ sfx('pick'); CL.timer=setInterval(()=>{ CL.sec++; const s=stepAt(CL.sec);
+      if(s!==CL.step){ CL.step=s; sfx('beep'); if(s>=0) toast(`⏰ Time for step ${s+1}: ${PLAN[s].t}`); else { toast('🎉 Class is over! Great work.'); CL.run=false; clearInterval(CL.timer);} }
+      renderPlan(); },1000); }
+  else clearInterval(CL.timer);
+  renderPlan();
+};
+$('#cReset').onclick=()=>{ clearInterval(CL.timer); CL.run=false; CL.sec=0; CL.step=-1; renderPlan(); };
+$('#classPill').onclick=()=>go('plan');
+function toast(t){ const el=$('#toast'); el.innerHTML=t; el.classList.add('on'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),4000); }
+
+/* ---------- learn: notes + flashcards ---------- */
+const IDEAS = [
+  ['Hardware','🖐️','The parts you can touch.','Big idea'],['Software','💿','Programs that tell the hardware what to do.','Big idea'],
+  ['Firmware','🔒','Software inside a chip, like the ROM chip.','Big idea'],['Operating system','🪟','Runs the computer. Connects hardware, programs and you. Example: Windows.','Big idea'],
+  ['MS-DOS','⌨️','You type commands. Came out in 1981 for IBM.','Big idea'],['GUI','🖱️','Graphical User Interface: pictures and windows you click. Windows has a GUI.','Big idea'],
+  ['AC and DC','⚡','The wall gives AC. The power supply changes it to DC for the computer.','Big idea'],
+  ['Desktop','','Lies flat on top of the desk.','Computer type'],['Tower','','Stands up under the desk.','Computer type'],['Laptop','','You can carry it (portable).','Computer type'],['PDA','','Small. You hold it in your hand.','Computer type'],
+];
+const TYPE_OF = {}; DEVTYPE.forEach(([n,c])=>TYPE_OF[n]=c);
+['Power supply','Motherboard','CPU','RAM','Video card','Sound card','Network card','Modem','ROM chip','Computer case'].forEach(n=>TYPE_OF[n]=TYPE_OF[n]||'Inside part');
+TYPE_OF['Hard drive']='Storage';
+function cardsFor(deck){
+  const parts = PARTS.map(([n,d])=>({n,pic:PICS[n]?n:null,d,tag:TYPE_OF[n]||'Part'}));
+  const ideas = IDEAS.map(([n,e,d,tag])=>({n,pic:PICS[n]?n:null,e,d,tag}));
+  if(deck==='parts') return parts;
+  if(deck==='ideas') return ideas;
+  return [...parts,...ideas];
+}
+const LEARN = {tab:'cards',deck:'all',list:[],i:0};
+function learnTab(tab,opt){
+  LEARN.tab=tab;
+  document.querySelectorAll('#learn .seg button').forEach(b=>b.classList.toggle('on',b.dataset.sub===tab));
+  $('#lCards').style.display = tab==='cards'?'block':'none';
+  $('#lNotes').style.display = tab==='notes'?'block':'none';
+  if(tab==='cards'){ if(opt&&opt.deck){ LEARN.deck=opt.deck; $('#deckSel').value=opt.deck; LEARN.list=[]; } if(!LEARN.list.length) newDeck(false); renderCard(); }
+}
+document.querySelectorAll('#learn .seg button').forEach(b=>b.onclick=()=>learnTab(b.dataset.sub));
+function newDeck(shuf){ LEARN.list = shuf ? shuffle(cardsFor(LEARN.deck)) : cardsFor(LEARN.deck); LEARN.i=0; }
+function renderCard(){
+  const c=LEARN.list[LEARN.i];
+  const art = c.pic ? `<svg viewBox="0 0 80 50">${pic(c.pic)}</svg>` : `<div style="font-size:72px;line-height:1">${c.e||'❓'}</div>`;
+  $('#flash').classList.remove('flip');
+  $('#fFront').innerHTML = `${art}<div class="fq">${c.pic?'What is this?':'What does this mean?'}</div>${c.pic?'':`<div class="fname">${c.n}</div>`}<div class="muted" style="font-size:12px">👆 Tap to flip</div>`;
+  $('#fBack').innerHTML = `<span class="tag">${c.tag}</span><div class="fname">${c.n}</div><p>${c.d}</p>`;
+  $('#fCount').textContent=`${LEARN.i+1} / ${LEARN.list.length}`;
+}
+$('#flash').onclick=()=>{ $('#flash').classList.toggle('flip'); sfx('pick'); };
+$('#fPrev').onclick=()=>{ LEARN.i=(LEARN.i-1+LEARN.list.length)%LEARN.list.length; renderCard(); };
+$('#fNext').onclick=()=>{ LEARN.i=(LEARN.i+1)%LEARN.list.length; renderCard(); };
+$('#fShuf').onclick=()=>{ newDeck(true); renderCard(); sfx('ok'); };
+$('#deckSel').onchange=e=>{ LEARN.deck=e.target.value; newDeck(false); renderCard(); };
+
+/* ---------- games ---------- */
+const GAMES = [
+  ['sort','🗂️','Sort It!','Put each item in the right box. Two rounds.'],
+  ['match','🧠','Memory Match','Find the picture and its name.'],
+  ['who','🕵️','Who Am I?','Read the clues. Guess the part.'],
+];
+let GM = {timer:null};
+function gameMenu(){
+  clearInterval(GM.timer);
+  $('#gPlay').innerHTML = `<div class="card"><h2>Games 🎮</h2><p class="muted" style="margin:0">Practise Chapter 7 with games. Get a high score!</p></div>`+
+    GAMES.map(([id,e,t,d])=>`<button class="card gcard" data-g="${id}"><span class="ge">${e}</span><span><b>${t}</b><br><span class="muted">${d}</span></span><span class="ge" style="font-size:22px">▶</span></button>`).join('');
+  $('#gPlay').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>startGame(b.dataset.g));
+}
+function startGame(id){ clearInterval(GM.timer); sfx('pick'); ({sort:sortStart,match:matchStart,who:whoStart})[id](); window.scrollTo(0,0); }
+const backBtn = `<button class="btn alt" id="gBack" style="margin-bottom:12px">← All games</button>`;
+function wireBack(){ $('#gBack').onclick=gameMenu; }
+function gstat(items){ return `<div class="stats">${items.map(([v,l,id])=>`<div class="stat"><b ${id?`id="${id}"`:''}>${v}</b><span>${l}</span></div>`).join('')}</div>`; }
+function itemArt(n){
+  if(pic(n)) return `<svg viewBox="0 0 80 50">${pic(n)}</svg>`;
+  return `<svg viewBox="0 0 80 50"><rect x="8" y="6" width="64" height="38" rx="4" fill="#e9eff6"/><rect x="8" y="6" width="64" height="9" rx="4" fill="#1554a8"/><circle cx="64" cy="10.5" r="2" fill="#ff6b6b"/><rect x="14" y="21" width="30" height="3" fill="#9aa5b2"/><rect x="14" y="28" width="44" height="3" fill="#9aa5b2"/><rect x="14" y="35" width="22" height="3" fill="#9aa5b2"/></svg>`;
+}
+function stars3(good,total){ const p=good/total; return p>=.9?'★★★':p>=.7?'★★☆':'★☆☆'; }
+
+/* Sort It */
+const SORT_ROUNDS = {
+  1:{title:'Round 1 · What type of device?',bins:[['Input','⬅️','goes IN'],['Output','➡️','comes OUT'],['Storage','💾','saves files'],['Inside part','🧩','boards & chips']],
+     items:[['Keyboard','Input'],['Mouse','Input'],['Touchpad','Input'],['Barcode reader','Input'],['Scanner','Input'],['Microphone','Input'],['Monitor','Output'],['Printer','Output'],['Speakers','Output'],
+            ['Hard drive','Storage'],['CD','Storage'],['DVD drive','Storage'],['CPU','Inside part'],['RAM','Inside part'],['Motherboard','Inside part'],['Power supply','Inside part'],['Video card','Inside part'],['Sound card','Inside part'],['Network card','Inside part']]},
+  2:{title:'Round 2 · Hardware, software or firmware?',bins:[['Hardware','🖐️','you can touch'],['Software','💿','a program'],['Firmware','🔒','program in a chip']],
+     items:[['Keyboard','Hardware'],['Monitor','Hardware'],['Printer','Hardware'],['CPU','Hardware'],['Mouse','Hardware'],['Motherboard','Hardware'],['Speakers','Hardware'],
+            ['Windows 10','Software'],['Windows XP','Software'],['Microsoft Office','Software'],['Adobe Acrobat Reader','Software'],['WordPerfect','Software'],['MS-DOS','Software'],['Unix','Software'],['ROM chip','Firmware']]},
+};
+let S={};
+function sortStart(round){
+  round=round||1; const R=SORT_ROUNDS[round];
+  S={round,items:shuffle(R.items),i:0,score:0,streak:0,best:0,wrong:[],lock:false};
+  sortRender();
+}
+function sortRender(){
+  const R=SORT_ROUNDS[S.round];
+  if(S.i>=S.items.length) return sortEnd();
+  const [n]=S.items[S.i];
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="padding:12px"><b>${R.title}</b></div>`+
+    gstat([[`${S.i+1}/${S.items.length}`,'Item'],[S.score,'Score'],['🔥'+S.streak,'Streak']])+
+    `<div class="card sortitem" id="sItem"><div class="qpic" style="margin:0 0 8px">${itemArt(n)}</div><div class="fname">${n}</div></div>
+     <div class="bins b${R.bins.length}">${R.bins.map(([b,e,h])=>`<button class="bin" data-bin="${b}"><span style="font-size:26px">${e}</span><b>${b}</b><small>${h}</small></button>`).join('')}</div>
+     <div id="sFb" class="fb" style="display:none"></div>`;
+  wireBack();
+  $('#gPlay').querySelectorAll('[data-bin]').forEach(b=>b.onclick=()=>sortPick(b));
+}
+function sortPick(btn){
+  if(S.lock) return; S.lock=true;
+  const [n,ans]=S.items[S.i], ok=btn.dataset.bin===ans, fb=$('#sFb');
+  btn.classList.add(ok?'right':'wrong'); fb.style.display='block';
+  if(ok){ S.score++; S.streak++; S.best=Math.max(S.best,S.streak); sfx(S.streak%5===0?'combo':'ok'); fb.className='fb good'; fb.innerHTML=S.streak>=3?`🔥 Streak ${S.streak}! ${n} → ${ans}`:`✅ Yes! ${n} → ${ans}`; }
+  else { S.streak=0; S.wrong.push([n,ans]); sfx('bad'); $('#sItem').classList.add('shake'); fb.className='fb bad'; fb.innerHTML=`❌ ${n} → <b>${ans}</b>`;
+    $('#gPlay').querySelector(`[data-bin="${ans}"]`).classList.add('right'); }
+  setTimeout(()=>{ S.i++; S.lock=false; sortRender(); }, ok?650:1500);
+}
+function sortEnd(){
+  const tot=S.items.length; if(S.score/tot>=.7){ confetti(); sfx('win'); }
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🗂️</div><div class="rank" style="font-size:34px">${stars3(S.score,tot)}</div>
+    <div class="big">${S.score} / ${tot}</div><p class="muted">Best streak: 🔥 ${S.best}</p>
+    ${S.wrong.length?`<p style="text-align:left"><b>Learn these:</b><br>${S.wrong.map(([n,a])=>`${n} → <b>${a}</b>`).join('<br>')}</p>`:'<p>Perfect! 🌟</p>'}
+    <div class="actions"><button class="btn alt" id="sAgain">Play again</button>${S.round===1?'<button class="btn" id="sNext">Round 2 →</button>':'<button class="btn" id="sNext">Round 1</button>'}</div></div>`;
+  wireBack(); $('#sAgain').onclick=()=>sortStart(S.round); $('#sNext').onclick=()=>sortStart(S.round===1?2:1);
+}
+
+/* Memory Match */
+let M={};
+function matchStart(){
+  const names=pick(PIC_NAMES,6);
+  M={cards:shuffle(names.flatMap(n=>[{n,t:'pic'},{n,t:'name'}])),open:[],done:new Set(),moves:0,sec:0,lock:false};
+  clearInterval(GM.timer); GM.timer=setInterval(()=>{M.sec++; const e=$('#mTime'); if(e) e.textContent=fmt(M.sec);},1000);
+  matchRender();
+}
+function matchRender(){
+  $('#gPlay').innerHTML = backBtn + gstat([[fmt(M.sec),'Time','mTime'],[M.moves,'Moves'],[`${M.done.size}/6`,'Pairs']])+
+    `<div class="mgrid">${M.cards.map((c,k)=>{ const up=M.open.includes(k)||M.done.has(c.n);
+      return `<button class="mcard${up?' up':''}${M.done.has(c.n)?' got':''}" data-k="${k}">${up?(c.t==='pic'?`<svg viewBox="0 0 80 50">${pic(c.n)}</svg>`:`<b>${c.n}</b>`):'<span>?</span>'}</button>`; }).join('')}</div>
+     <p class="muted" style="text-align:center">Find the picture and its name. 🧠</p>`;
+  wireBack();
+  $('#gPlay').querySelectorAll('.mcard').forEach(b=>b.onclick=()=>matchFlip(+b.dataset.k));
+}
+function matchFlip(k){
+  if(M.lock || M.open.includes(k) || M.done.has(M.cards[k].n)) return;
+  M.open.push(k); sfx('pick');
+  if(M.open.length===2){
+    M.moves++; const [a,b]=M.open.map(i=>M.cards[i]);
+    if(a.n===b.n){ M.done.add(a.n); M.open=[]; sfx('ok'); if(M.done.size===6) return matchEnd(); }
+    else { M.lock=true; setTimeout(()=>{ M.open=[]; M.lock=false; matchRender(); },900); }
+  }
+  matchRender();
+}
+function matchEnd(){
+  clearInterval(GM.timer); confetti(); sfx('win');
+  const st=M.moves<=9?'★★★':M.moves<=14?'★★☆':'★☆☆';
+  const best=store.get('pclab_best_match',null); const rec=!best||M.moves<best; if(rec) store.set('pclab_best_match',M.moves);
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🧠</div><div class="rank" style="font-size:34px">${st}</div>
+    <p>All 6 pairs in <b>${M.moves}</b> moves and <b>${fmt(M.sec)}</b>.${rec?'<br>🏆 New record!':''}</p>
+    <div class="actions"><button class="btn" id="mAgain">New cards 🔁</button></div></div>`;
+  wireBack(); $('#mAgain').onclick=matchStart;
+}
+
+/* Who Am I */
+const RIDDLES = [
+  ['Keyboard',['I have many keys.','You type letters with me.','I am an input device.']],
+  ['Mouse',['I have buttons and a wheel.','I move the pointer on the screen.','You click with me.']],
+  ['Monitor',['I am a screen.','You see your work on me.','I am an output device.']],
+  ['Printer',['I use paper and ink.','I make a hard copy.','I am an output device.']],
+  ['CPU',['I am a small square chip.','I sit on the motherboard.','I am the “brain” of the computer.']],
+  ['RAM',['I am a long, thin stick.','I sit near the CPU.','I forget everything when the power is off.']],
+  ['Power supply',['I have a fan.','The cable from the wall connects to me.','I change AC into DC.']],
+  ['Motherboard',['I am big and green.','All the parts connect to me.','I am the main board.']],
+  ['Hard drive',['I am inside the case.','I am magnetic.','I keep your files.']],
+  ['Video card',['I plug into the motherboard.','Some of us have fans.','I send the picture to the monitor.']],
+  ['Sound card',['I have small colored holes.','The speakers connect to me.','The microphone connects to me too.']],
+  ['Network card',['I plug into the motherboard.','A cable connects to me.','I connect you to the network.']],
+  ['Scanner',['I have a lid and a light.','You put paper on me.','I put pictures into the computer.']],
+  ['Barcode reader',['You find me in shops.','I use a red light.','I read the lines on products.']],
+  ['Microphone',['Singers love me.','I listen.','I record your voice.']],
+  ['Speakers',['I am an output device.','I connect to the sound card.','You hear music from me.']],
+  ['ROM chip',['I am a small chip.','My name means Read Only Memory.','I am firmware.']],
+  ['DVD drive',['I have a tray.','I read discs.','I can play movies.']],
+  ['Touchpad',['Laptops have me.','You use your finger on me.','I do the job of a mouse.']],
+  ['Modem',['I have small lights.','I am old but famous.','I connect the computer to the phone line.']],
+];
+let W={};
+function whoStart(){ W={list:pick(RIDDLES,8),i:0,clue:1,score:0,lock:false}; whoRender(); }
+function whoRender(){
+  if(W.i>=W.list.length) return whoEnd();
+  const [ans,clues]=W.list[W.i];
+  if(!W.opts) W.opts=shuffle([ans,...pick(PIC_NAMES.filter(x=>x!==ans),3)]);
+  $('#gPlay').innerHTML = backBtn + gstat([[`${W.i+1}/${W.list.length}`,'Riddle'],[W.score,'Points'],[`${4-W.clue} pts`,'Worth']])+
+    `<div class="card"><h2 style="margin-bottom:8px">Who am I? 🕵️</h2>${clues.slice(0,W.clue).map((c,k)=>`<div class="clue"><b>Clue ${k+1}:</b> ${c}</div>`).join('')}
+     ${W.clue<3?`<button class="btn alt" id="wMore" style="width:100%;margin-top:8px">Show next clue (−1 point)</button>`:''}</div>
+     <div class="opts pics hide" id="wOpts">${W.opts.map(o=>`<button class="opt" data-o="${o}"><svg viewBox="0 0 80 50">${pic(o)}</svg><span>${o}</span></button>`).join('')}</div>
+     <div id="wFb" class="fb" style="display:none"></div>`;
+  wireBack();
+  if($('#wMore')) $('#wMore').onclick=()=>{ W.clue++; sfx('pick'); whoRender(); };
+  $('#gPlay').querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>whoPick(b));
+}
+function whoPick(b){
+  if(W.lock) return; W.lock=true;
+  const ans=W.list[W.i][0], ok=b.dataset.o===ans, pts=ok?4-W.clue:0, fb=$('#wFb');
+  W.score+=pts; $('#wOpts').classList.remove('hide');
+  b.classList.add(ok?'right':'wrong'); if(!ok) $('#gPlay').querySelector(`[data-o="${ans}"]`).classList.add('right');
+  sfx(ok?'ok':'bad'); fb.style.display='block'; fb.className='fb '+(ok?'good':'bad');
+  fb.innerHTML=(ok?`✅ Yes! I am the <b>${ans}</b>. +${pts}`:`❌ No. I am the <b>${ans}</b>.`)+`<br><button class="btn" id="wNext" style="margin-top:10px;width:100%">Next →</button>`;
+  $('#wNext').onclick=()=>{ W.i++; W.clue=1; W.opts=null; W.lock=false; whoRender(); };
+}
+function whoEnd(){
+  const max=W.list.length*3; if(W.score/max>=.6){ confetti(); sfx('win'); }
+  $('#gPlay').innerHTML = backBtn + `<div class="card" style="text-align:center"><div style="font-size:56px">🕵️</div><div class="rank" style="font-size:34px">${stars3(W.score,max)}</div>
+    <div class="big">${W.score} / ${max}</div><p class="muted">${W.score>=max*.9?'Super detective! 🌟':W.score>=max*.6?'Good detective! 👍':'Read the flashcards and try again! 💪'}</p>
+    <div class="actions"><button class="btn" id="wAgain">New riddles 🔁</button></div></div>`;
+  wireBack(); $('#wAgain').onclick=whoStart;
+}
+renderPlan();
 
 /* ---------- Build-a-PC game ---------- */
 const INT = {
