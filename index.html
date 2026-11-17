@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PC Lab – Chapter 7: Desktop Teardown</title>
+<style>
+:root{
+  --bg:#0e1621; --panel:#16212f; --panel2:#1d2b3d; --line:#2b3d55;
+  --text:#e9eff6; --muted:#93a4ba; --accent:#3ddbb3; --accent2:#5aa9ff;
+  --good:#3ddb7c; --bad:#ff6b6b; --warn:#ffbe55; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+header{position:sticky;top:0;z-index:20;background:rgba(14,22,33,.95);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;gap:10px;padding:12px 16px 6px;max-width:900px;margin:auto}
+.logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:800;color:#0e1621}
+.top h1{font-size:17px;margin:0;line-height:1.2}
+.top small{color:var(--muted);font-size:12px;display:block}
+nav{display:flex;gap:6px;padding:6px 12px 10px;max-width:900px;margin:auto}
+nav button{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 4px;font-size:14px;font-weight:600;color:var(--muted)}
+nav button.on{background:var(--accent);border-color:var(--accent);color:#0e1621}
+main{max-width:900px;margin:auto;padding:14px 14px 80px}
+.view{display:none}.view.on{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+h2{font-size:19px;margin:0 0 10px}
+h3{font-size:15px;margin:0 0 8px;color:var(--accent)}
+p{line-height:1.5}
+.muted{color:var(--muted)}
+.btn{background:var(--accent);color:#0e1621;border:0;border-radius:11px;padding:13px 18px;font-weight:700;font-size:15px}
+.btn.alt{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+.btn.warn{background:var(--warn)}
+.btn:disabled{opacity:.45}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grow{flex:1}
+select{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);flex:1;min-width:130px}
+
+/* notes */
+.notes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.note dl{margin:0}
+.note dt{font-weight:700;margin-top:8px}
+.note dd{margin:2px 0 0;color:var(--muted);font-size:14px;line-height:1.45}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--panel2);color:var(--accent);border:1px solid var(--line)}
+table.ab{width:100%;border-collapse:collapse;font-size:14px}
+table.ab td{padding:6px 4px;border-bottom:1px solid var(--line)}
+table.ab td:first-child{font-weight:800;color:var(--accent2);width:60px}
+
+/* test */
+.stats{display:flex;gap:8px;margin-bottom:12px}
+.stat{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+.stat b{display:block;font-size:19px}
+.stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat.low b{color:var(--bad)}
+.bar{height:6px;background:var(--panel2);border-radius:6px;overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.qtext{font-size:18px;line-height:1.45;margin:10px 0 14px;font-weight:600}
+.opts{display:grid;gap:9px}
+.opt{text-align:left;background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:13px 14px;font-size:16px}
+.opt.sel{border-color:var(--accent2);background:#1f3550}
+.opt.right{border-color:var(--good);background:#173b2b}
+.opt.wrong{border-color:var(--bad);background:#3f1d22}
+.txt{width:100%;font:inherit;font-size:17px;padding:13px;border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--text)}
+.hintbox,.fb{margin-top:12px;padding:12px 14px;border-radius:12px;font-size:15px;line-height:1.45}
+.hintbox{background:#3a3016;border:1px solid #6b5520;color:#ffe2a6}
+.fb.good{background:#173b2b;border:1px solid #2c7a52}
+.fb.bad{background:#3f1d22;border:1px solid #84343d}
+.actions{display:flex;gap:10px;margin-top:14px}
+.actions .btn{flex:1}
+.review{list-style:none;padding:0;margin:0}
+.review li{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.45}
+.review .ok{color:var(--good);font-weight:700}.review .no{color:var(--bad);font-weight:700}
+.big{font-size:44px;font-weight:800;margin:4px 0}
+
+/* drawer */
+.drawer{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:none}
+.drawer.on{display:block}
+.drawer .sheet{position:absolute;right:0;top:0;bottom:0;width:min(420px,92vw);background:var(--panel);border-left:1px solid var(--line);overflow:auto;padding:16px}
+.fab{position:fixed;right:14px;bottom:16px;z-index:30;border-radius:30px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+
+/* build game */
+.msg{min-height:48px;padding:11px 14px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);font-size:15px;line-height:1.4;margin-bottom:12px}
+.msg.good{background:#173b2b;border-color:#2c7a52}
+.msg.bad{background:#3f1d22;border-color:#84343d;animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.case{background:#0b121b;border:3px solid #3a4f6b;border-radius:16px;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative}
+.case:before{content:"OPEN CASE (side view)";position:absolute;top:-11px;left:14px;background:var(--bg);font-size:10px;letter-spacing:.1em;color:var(--muted);padding:0 6px}
+.slot{border:2px dashed #3d5574;border-radius:11px;min-height:62px;padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:12px;color:var(--muted);transition:.15s}
+.slot.fill{border-style:solid;border-color:var(--accent);color:var(--text);background:#13302b}
+.slot.target{border-color:var(--accent2);background:#16273c;color:var(--text)}
+.slot .ic{font-size:24px;line-height:1}
+.bays{display:grid;gap:8px}
+.s-mobo{grid-column:1/-1;min-height:190px}
+.s-mobo.fill{background:#0f3a28;border-color:#2e9b63;justify-content:flex-start}
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;width:100%;margin-top:6px}
+.board .slot{min-height:56px;background:rgba(0,0,0,.25)}
+.board .slot.fill{background:#13302b}
+.rom{border:2px solid #556a85;border-radius:9px;font-size:11px;padding:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#c7d3e2;background:#1b2636}
+.tray{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.part{background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:9px 12px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:7px}
+.part .ic{font-size:20px}
+.part.sel{border-color:var(--accent2);background:#1f3550;transform:translateY(-2px)}
+.ports{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;background:#0b121b;border:3px solid #3a4f6b;border-radius:16px;padding:12px;position:relative}
+.ports:before{content:"BACK OF THE CASE";position:absolute;top:-11px;left:14px;background:var(--bg);font-size:10px;letter-spacing:.1em;color:var(--muted);padding:0 6px}
+.port{border:2px dashed #3d5574;border-radius:11px;padding:10px;min-height:84px;font-size:12px;color:var(--muted);text-align:center}
+.port.target{border-color:var(--accent2);background:#16273c}
+.port.full{border-style:solid;border-color:var(--accent)}
+.chip{display:inline-flex;align-items:center;gap:4px;background:#13302b;border:1px solid #2c7a52;color:var(--text);border-radius:20px;padding:4px 9px;margin:5px 2px 0;font-size:13px}
+.chip.rm,.slot.rm{cursor:pointer}
+.boot{display:grid;gap:9px}
+.step{text-align:left;background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px}
+.step.done{border-color:var(--good);background:#173b2b;opacity:.75}
+.step .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--good);color:#0e1621;font-weight:800;font-size:13px;margin-right:8px}
+.screen{background:#000;border:10px solid #2a3442;border-radius:14px;aspect-ratio:16/10;max-width:460px;margin:6px auto 0;display:flex;flex-direction:column;align-items:center;justify-content:center;background-image:linear-gradient(135deg,#1554a8,#3ddbb3);color:#fff;text-align:center;padding:14px}
+.screen .stars{font-size:34px;letter-spacing:4px}
+.stand{width:90px;height:16px;background:#2a3442;margin:0 auto;border-radius:0 0 8px 8px}
+.phase{display:flex;gap:6px;margin-bottom:12px}
+.phase span{flex:1;height:6px;border-radius:6px;background:var(--panel2)}
+.phase span.on{background:var(--accent)}
+.gstats{display:flex;gap:8px;margin-bottom:12px}
+@media(min-width:700px){.case{grid-template-columns:1fr 2fr}.board{grid-template-columns:repeat(6,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="logo">PC</div>
+    <div><h1>PC Lab</h1><small>Chapter 7 · Desktop Teardown</small></div>
+  </div>
+  <nav>
+    <button data-view="notes" class="on">📘 Notes</button>
+    <button data-view="test">📝 Practice Test</button>
+    <button data-view="build">🔧 Build-a-PC</button>
+  </nav>
+</header>
+
+<main>
+  <!-- NOTES -->
+  <section id="notes" class="view on">
+    <div class="card">
+      <h2>Quick notes</h2>
+      <p class="muted" style="margin:0">Everything from Chapter 7 on one page. The same notes open as a side sheet during the practice test.</p>
+    </div>
+    <div class="notes-grid" id="notesGrid"></div>
+  </section>
+
+  <!-- TEST -->
+  <section id="test" class="view">
+    <div id="tStart" class="card">
+      <h2>Practice Test</h2>
+      <p class="muted">You get new questions in a new order every attempt, with a timer and a score. A hint costs half a point on that question.</p>
+      <div class="row" style="margin:12px 0">
+        <label class="f">Questions
+          <select id="qCount"><option>10</option><option selected>15</option><option>20</option><option>30</option></select>
+        </label>
+        <label class="f">Time limit
+          <select id="qTime"><option value="5">5 min</option><option value="10" selected>10 min</option><option value="15">15 min</option><option value="20">20 min</option></select>
+        </label>
+      </div>
+      <p class="muted" id="bestTest" style="font-size:14px"></p>
+      <button class="btn" id="startBtn" style="width:100%">Start test</button>
+    </div>
+
+    <div id="tRun" style="display:none">
+      <div class="stats">
+        <div class="stat"><b id="sQ">1/15</b><span>Question</span></div>
+        <div class="stat"><b id="sScore">0</b><span>Score</span></div>
+        <div class="stat" id="timeBox"><b id="sTime">10:00</b><span>Time left</span></div>
+      </div>
+      <div class="bar"><i id="pBar" style="width:0"></i></div>
+      <div class="card">
+        <span class="tag" id="qTopic">Topic</span>
+        <div class="qtext" id="qText"></div>
+        <div id="qBody"></div>
+        <div id="qHint" class="hintbox" style="display:none"></div>
+        <div id="qFb" class="fb" style="display:none"></div>
+        <div class="actions">
+          <button class="btn alt" id="hintBtn">💡 Hint</button>
+          <button class="btn" id="checkBtn">Check</button>
+        </div>
+      </div>
+      <button class="btn alt" id="quitBtn" style="width:100%">End test now</button>
+    </div>
+
+    <div id="tEnd" style="display:none">
+      <div class="card" style="text-align:center">
+        <div class="muted">Your score</div>
+        <div class="big" id="eScore"></div>
+        <div id="eMsg" class="muted"></div>
+        <div class="actions"><button class="btn" id="againBtn">Try a new test</button></div>
+      </div>
+      <div class="card"><h3>Review</h3><ul class="review" id="eReview"></ul></div>
+    </div>
+  </section>
+
+  <!-- BUILD -->
+  <section id="build" class="view">
+    <div class="card">
+      <h2 id="bTitle">Build-a-PC</h2>
+      <p class="muted" id="bIntro" style="margin:0"></p>
+    </div>
+    <div class="phase"><span></span><span></span><span></span><span></span></div>
+    <div class="gstats">
+      <div class="stat"><b id="gTime">0:00</b><span>Time</span></div>
+      <div class="stat"><b id="gMiss">0</b><span>Mistakes</span></div>
+      <div class="stat"><b id="gBest">–</b><span>Best build</span></div>
+    </div>
+    <div class="msg" id="gMsg"></div>
+    <div id="gArea"></div>
+  </section>
+</main>
+
+<button class="btn fab" id="sheetBtn" style="display:none">📄 Notes sheet</button>
+<div class="drawer" id="drawer"><div class="sheet">
+  <div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">Notes sheet</h2><button class="btn alt" id="closeSheet">✕</button></div>
+  <div id="sheetBody"></div>
+</div></div>
+
+<script>
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const pick = (a,n) => shuffle(a).slice(0,n);
+const fmt = s => Math.floor(s/60)+':'+String(Math.max(0,s%60)).padStart(2,'0');
+const norm = s => s.toLowerCase().replace(/[^a-z]/g,'');
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+};
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.view));
+  $('#sheetBtn').style.display = (b.dataset.view==='test' && T && !T.over) ? 'block':'none';
+  if(b.dataset.view==='build' && !G.started) renderBuild();
+  window.scrollTo(0,0);
+});
+
+/* ---------- notes content ---------- */
+const NOTES = [
+  {t:'Hardware · Software · Firmware', items:[
+    ['Hardware','Physical parts you can touch: the computer itself, processor and memory chips, input/output devices, disks, modems, cables.'],
+    ['Software','The operating system and applications. It gives the hardware instructions to carry out. Examples: Windows XP, Microsoft Office, Adobe Acrobat Reader, WordPerfect.'],
+    ['Firmware','Software written into chips you can touch. Example: the ROM (Read Only Memory) chip, which always has software in it.'],
+    ['Operating system','Coordinates hardware, software applications and the user. Examples: DOS, Windows 98, NT Workstation, 2000, XP, 7, 8, 10 and Unix.']]},
+  {t:'Computer models', items:[
+    ['Desktop','Sits horizontally on top of a desk.'],
+    ['Tower','Sits vertically under a desk.'],
+    ['Laptop','Portable.'],
+    ['PDA','Handheld “electronic organizer” for schedules, contacts, notes and e-mail.']]},
+  {t:'Inside the case', items:[
+    ['Computer case','Contains the major components and protects them.'],
+    ['Power supply','Converts AC from the wall outlet to DC for the parts. Has a fan to keep the computer cool.'],
+    ['Motherboard','The main and largest circuit board. All parts connect to it or communicate through it.'],
+    ['CPU (processor)','Interprets and executes program instructions. Manages input, output and storage devices.'],
+    ['RAM','Temporary memory chips on the motherboard near the CPU. Holds data and programs while they are in use, and needs power.'],
+    ['Hard drive / hard disk','Magnetic storage that keeps files inside the computer.'],
+    ['CD drive / DVD drive','Reads discs. A DVD drive also plays music and video DVDs.']]},
+  {t:'Cards and connections', items:[
+    ['Video card','Connects the computer to the monitor.'],
+    ['Sound card','Connects the speakers and microphone.'],
+    ['Network card','Connects the computer to the network with special cables.'],
+    ['Modem','Where the computer connects to the phone line.']]},
+  {t:'Input devices', items:[
+    ['Keyboard','Enter information and give commands.'],
+    ['Mouse','Controls the on-screen pointer: point, click, double-click and drag.'],
+    ['Touchpad','A pressure- and motion-sensitive device used in place of a mouse.'],
+    ['Barcode reader','Turns printed bars into a number. Shops use it to enter prices quickly.'],
+    ['Scanner','Puts pictures into the computer.'],
+    ['Microphone','Records sound as input.']]},
+  {t:'Output and storage', items:[
+    ['Monitor','Output: a display screen.'],
+    ['Printer','Output: a hard copy on paper.'],
+    ['Speakers','Output: voice, music and other sounds.'],
+    ['CD','Compact Disk: optical storage.'],
+    ['Hard disk','Magnetic storage.']]},
+  {t:'DOS and Windows', items:[
+    ['DOS','Disk Operating System. Connects the hardware with the programs you run.'],
+    ['MS-DOS','Microsoft’s DOS. A command line interface. Version 1.0 came out in 1981 for IBM computers.'],
+    ['Windows','Microsoft’s family of operating systems with a graphical user interface (GUI).']]},
+];
+const ABBR = [
+  {a:'CPU',f:'Central Processing Unit',fake:['Computer Power Unit','Central Program Utility','Control Processing Unit']},
+  {a:'RAM',f:'Random Access Memory',fake:['Rapid Action Memory','Read And Modify Memory','Random Active Module']},
+  {a:'ROM',f:'Read Only Memory',fake:['Random Output Memory','Run Once Memory','Read Over Module']},
+  {a:'DVD',f:'Digital Versatile Disk',fake:['Digital Video Drive','Data Visual Disk','Direct Video Display']},
+  {a:'PDA',f:'Personal Digital Assistant',fake:['Portable Data Adapter','Personal Device Application','Private Digital Agent']},
+  {a:'DOS',f:'Disk Operating System',fake:['Data Output System','Digital Operating Software','Disk Organising Software']},
+  {a:'GUI',f:'Graphical User Interface',fake:['General Use Interface','Graphic Unit Input','Guided User Instruction']},
+  {a:'CD',f:'Compact Disk',fake:['Computer Data','Central Drive','Copy Disk']},
+  {a:'DC',f:'Direct Current',fake:['Digital Current','Dual Charge','Device Cable']},
+  {a:'AC',f:'Alternating Current',alt:['Alternative Current'],fake:['Active Current','Auto Charge','Adapter Cable']},
+];
+function notesHTML(){
+  let h = NOTES.map(g=>`<div class="card note"><h3>${g.t}</h3><dl>${g.items.map(i=>`<dt>${i[0]}</dt><dd>${i[1]}</dd>`).join('')}</dl></div>`).join('');
+  h += `<div class="card note"><h3>Abbreviations</h3><table class="ab">${ABBR.map(x=>`<tr><td>${x.a}</td><td>${x.f}</td></tr>`).join('')}</table>
+  <p class="muted" style="font-size:12px;margin-bottom:0">The slides write AC as “Alternative Current”. The standard name is <b>Alternating</b> Current.</p></div>`;
+  return h;
+}
+$('#notesGrid').innerHTML = notesHTML();
+$('#sheetBody').innerHTML = notesHTML();
+$('#sheetBtn').onclick = ()=>$('#drawer').classList.add('on');
+$('#closeSheet').onclick = ()=>$('#drawer').classList.remove('on');
+$('#drawer').onclick = e=>{ if(e.target.id==='drawer') $('#drawer').classList.remove('on'); };
+
+/* ---------- question bank ---------- */
+const PARTS = [
+  ['Computer case','Contains the major components of the computer and helps protect them.','It’s the box everything else sits inside.'],
+  ['Power supply','Converts AC voltage from the wall outlet into DC voltage and has a fan to keep the computer cool.','Think: wall outlet → computer.'],
+  ['Motherboard','The main and largest circuit board. All components connect to it or communicate through it.','It’s the “main” board.'],
+  ['CPU','The chip that interprets and executes program instructions and manages input, output and storage devices.','The processor, the “brain”.'],
+  ['RAM','Temporary memory chips near the CPU that hold data and programs while they are in use. Needs power.','Temporary memory: it forgets everything when the power goes off.'],
+  ['Hard drive','A common magnetic storage device that keeps files inside the computer.','Your saved files live here, even after shutdown.'],
+  ['DVD drive','An alternative to a CD drive that also supports music and video discs.','Movie discs.'],
+  ['Video card','A circuit board on the motherboard that sends information to the monitor for display.','Pictures on the screen.'],
+  ['Sound card','Connects the speakers and microphone to the computer.','Audio in and out.'],
+  ['Network card','A circuit board that connects the computer to the rest of the network, usually with special cables.','A network cable plugs into it.'],
+  ['Modem','The place where the computer is connected to the phone line.','Phone line.'],
+  ['Monitor','A display screen that gives “output” to the user.','You look at it.'],
+  ['Printer','An output device that produces a hard copy on paper.','Paper comes out of it.'],
+  ['Keyboard','Used to enter information and give commands by typing.','Keys.'],
+  ['Mouse','Controls the on-screen pointer by pointing, clicking, double-clicking and dragging.','You roll it across the desk.'],
+  ['Touchpad','A pressure- and motion-sensitive device used in place of a mouse.','Found on most laptops.'],
+  ['Barcode reader','Converts a pattern of printed bars into a number the computer can read.','Supermarket checkout.'],
+  ['Scanner','Allows pictures to be placed into a computer.','Paper photo → computer.'],
+  ['Microphone','Lets the user record sounds as input.','You speak into it.'],
+  ['Speakers','Generate or reproduce voice, music and other sounds.','You hear them.'],
+  ['CD','Compact Disk: a type of optical storage.','A shiny disc.'],
+  ['ROM chip','A chip that always has software stored in it, an example of firmware.','Read Only…'],
+];
+const DEVTYPE = [['Keyboard','Input'],['Mouse','Input'],['Touchpad','Input'],['Barcode reader','Input'],['Scanner','Input'],['Microphone','Input'],
+  ['Monitor','Output'],['Printer','Output'],['Speakers','Output'],['Hard disk','Storage'],['CD','Storage'],['DVD drive','Storage'],['CPU','Processing']];
+const HSF = [['Keyboard','Hardware'],['Monitor','Hardware'],['Motherboard','Hardware'],['RAM chips','Hardware'],['Printer','Hardware'],['Power supply','Hardware'],['Mouse','Hardware'],
+  ['Windows XP','Software'],['Microsoft Office','Software'],['Adobe Acrobat Reader','Software'],['WordPerfect','Software'],['MS-DOS','Software'],['Unix','Software'],['Windows 10','Software'],
+  ['ROM chip','Firmware'],['A chip that always has software written inside it','Firmware']];
+const CONNECT = [['the monitor','Video card'],['the speakers','Sound card'],['the microphone','Sound card'],['a network cable','Network card'],['the phone line','Modem']];
+const MODELS = [['sits horizontally on top of a desk','Desktop'],['sits vertically under a desk','Tower'],['is portable and folds shut','Laptop'],['is a handheld electronic organizer for schedules, contacts and notes','PDA']];
+const TF = [
+  ['RAM keeps its data when the computer is switched off.',false,'RAM is temporary and needs power. Saved files stay on the hard drive.'],
+  ['RAM chips sit on the motherboard near the CPU.',true,'The notes say RAM exists as chips on the motherboard near the CPU.'],
+  ['The power supply converts DC from the wall into AC for the computer.',false,'It’s the other way round: the wall gives AC and the power supply turns it into DC.'],
+  ['The power supply has a fan to help keep the computer cool.',true,'Yes, the fan is part of the power supply.'],
+  ['MS-DOS is a command line user interface.',true,'You type commands in MS-DOS. Windows is the one with the GUI.'],
+  ['MS-DOS 1.0 was released in 1981 for IBM computers.',true,'1981, for IBM.'],
+  ['Windows gives the user a graphical user interface (GUI).',true,'Windows is a GUI operating system by Microsoft.'],
+  ['Software is something you can physically touch.',false,'Hardware is what you can touch. Software is the instructions.'],
+  ['Firmware is software stored inside a chip you can touch.',true,'Example: the ROM chip.'],
+  ['The motherboard is the smallest circuit board in the computer.',false,'It is the largest circuit board.'],
+  ['A hard disk is an optical storage device.',false,'A hard disk is magnetic. A CD is optical.'],
+  ['A CD is a type of optical storage device.',true,'CD = Compact Disk, optical storage.'],
+  ['A barcode reader is an output device.',false,'It turns printed bars into a number: input.'],
+  ['The operating system coordinates the hardware, the software and the user.',true,'That is the job of the OS.'],
+  ['The video card connects the computer to the speakers.',false,'The video card goes to the monitor. The sound card goes to the speakers.'],
+  ['A touchpad can be used in place of a mouse.',true,'It is pressure- and motion-sensitive.'],
+  ['Microsoft Office is an operating system.',false,'It is an application (software), not an operating system.'],
+];
+const SCEN = [
+  ['A shop wants to enter prices at the checkout quickly. Which input device should it use?','Barcode reader',['Scanner','Keyboard','Microphone'],'Barcode readers turn printed bars into numbers.'],
+  ['You want to put a printed family photo into the computer. Which device?','Scanner',['Printer','Barcode reader','Monitor'],'A scanner places pictures into the computer.'],
+  ['You need a paper copy of your report for the teacher. Which device?','Printer',['Scanner','Monitor','Speakers'],'The printer produces a hard copy.'],
+  ['Your laptop has no mouse plugged in. What do you use to move the pointer?','Touchpad',['Keyboard','Microphone','Barcode reader'],'The touchpad replaces the mouse.'],
+  ['The PC is on and the monitor works on another PC, but this screen is black. Which card would you check first?','Video card',['Sound card','Network card','Modem'],'The video card sends the picture to the monitor.'],
+  ['The music app is playing but you hear nothing, and the speakers are switched on. Which card would you check?','Sound card',['Video card','Network card','Modem'],'The speakers connect through the sound card.'],
+  ['The network cable is plugged in but the PC can’t reach the network. Which card would you check?','Network card',['Sound card','Video card','Power supply'],'The network card connects the PC to the network.'],
+  ['The fan at the back, right next to the power cord, has stopped spinning. Which component is it part of?','Power supply',['CPU','Hard drive','Motherboard'],'The power supply has its own cooling fan.'],
+  ['You restart the PC and yesterday’s saved essay is still there. Where was it stored?','Hard drive',['RAM','Video card','CPU'],'RAM is wiped when power is lost. The hard drive keeps files.'],
+  ['The power cuts out and the essay you hadn’t saved is gone. Which memory was it in?','RAM',['Hard drive','ROM chip','CD'],'RAM is temporary and needs power.'],
+  ['You want to watch a movie disc on the computer. Which drive do you need?','DVD drive',['CD drive','Hard drive','Modem'],'A DVD drive plays music and video DVDs.'],
+  ['You want to record a voice note for your group project. Which input device?','Microphone',['Speakers','Scanner','Monitor'],'The microphone records sound as input.'],
+  ['A program is open and you are using it right now. Where is it held while you work?','RAM',['Hard drive','CD','ROM chip'],'RAM holds programs while they are being used.'],
+  ['You need a computer that fits under the desk to save space. Which model?','Tower',['Desktop','Laptop','PDA'],'A tower sits vertically under a desk.'],
+];
+const DEV_HINT = 'Ask yourself: does information go INTO the computer, come OUT of it, get KEPT, or get WORKED ON?';
+const HSF_HINT = 'Can you touch it? → Hardware. Is it a program? → Software. A chip you can touch with a program inside? → Firmware.';
+
+function mc(topic,prompt,answer,distract,hint,explain){
+  return {kind:'mc',topic,prompt,answer,options:shuffle([answer,...distract]),hint,explain};
+}
+function buildPool(){
+  const names = PARTS.map(p=>p[0]);
+  const G = {};
+  G.parts = PARTS.map(([n,d,h])=>mc('Components',`Which component is this?<br><span class="muted" style="font-weight:400">“${d}”</span>`,n,pick(names.filter(x=>x!==n),3),h,`${n}: ${d}`));
+  G.devtype = DEVTYPE.map(([n,c])=>mc('Device types',`Is the <b>${n}</b> an input, output, storage or processing device?`,c,['Input','Output','Storage','Processing'].filter(x=>x!==c),DEV_HINT,`${n} is a${c[0]==='I'||c[0]==='O'?'n':''} ${c.toLowerCase()} device.`));
+  G.devtype.forEach(q=>q.options=['Input','Output','Storage','Processing']);
+  G.hsf = HSF.map(([n,c])=>{const q=mc('Hardware / Software / Firmware',`Is <b>${n}</b> hardware, software or firmware?`,c,[],HSF_HINT,`${n} → ${c}.`);q.options=['Hardware','Software','Firmware'];return q;});
+  G.abbr = ABBR.map(x=>mc('Abbreviations',`What does <b>${x.a}</b> stand for?`,x.f,pick(x.fake,3),'First letters: '+x.f.split(' ').map(w=>w[0]+'_'.repeat(w.length-1)).join(' '),`${x.a} = ${x.f}.`+(x.alt?' (Your slides write “Alternative Current”.)':'')));
+  G.typed = pick(ABBR.filter(x=>x.a.length===3),7).map(x=>({kind:'text',topic:'Abbreviations',prompt:`Type the full name of <b>${x.a}</b>.`,answer:x.f,accept:[x.f,...(x.alt||[])].map(norm),hint:'First letters: '+x.f.split(' ').map(w=>w[0]+'_'.repeat(w.length-1)).join(' '),explain:`${x.a} = ${x.f}.`}));
+  G.connect = CONNECT.map(([d,c])=>{const q=mc('Connections',`What do you plug <b>${d}</b> into?`,c,[],'Each card is named after what it connects: picture, sound, network… and the phone line goes somewhere special.',`${d[0].toUpperCase()+d.slice(1)} → ${c}.`);q.options=['Video card','Sound card','Network card','Modem'];return q;});
+  G.models = MODELS.map(([d,m])=>{const q=mc('Computer models',`Which model of computer ${d}?`,m,[],'There are four models: desktop, tower, laptop and PDA.',`A ${m} ${d}.`);q.options=['Desktop','Tower','Laptop','PDA'];return q;});
+  G.tf = TF.map(([s,v,e])=>({kind:'mc',topic:'True or false',prompt:s,answer:v?'True':'False',options:['True','False'],hint:'Check the Notes sheet: look for the key word in the statement.',explain:e}));
+  G.scen = SCEN.map(([p,a,d,e])=>mc('Real-life scenarios',p,a,d,'Picture yourself doing it. What part of the PC is involved?',e));
+  // odd one out
+  const byCat = {}; DEVTYPE.forEach(([n,c])=>(byCat[c]=byCat[c]||[]).push(n));
+  G.odd = [];
+  ['Input','Output','Storage'].forEach(c=>{ for(let k=0;k<2;k++){
+    const ins = pick(byCat[c],3); const out = pick(DEVTYPE.filter(d=>d[1]!==c),1)[0];
+    G.odd.push(mc('Odd one out',`Which one is <b>NOT</b> a${c==='Input'||c==='Output'?'n':''} ${c.toLowerCase()} device?`,out[0],ins,DEV_HINT,`${out[0]} is a${/^[IO]/.test(out[1])?'n':''} ${out[1].toLowerCase()} device. The others are ${c.toLowerCase()} devices.`));
+  }});
+  G.os = [0,1,2].map(()=>{const app=pick(['Microsoft Office','Adobe Acrobat Reader','WordPerfect'],1)[0];
+    return mc('Operating systems','Which one of these is <b>NOT</b> an operating system?',app,pick(['DOS','Windows 98','Windows XP','Windows 7','Windows 10','Unix','NT Workstation','Windows 2000'],3),'Operating systems run the whole computer. Applications are programs you open on top of them.',`${app} is an application, not an operating system.`);});
+  G.os.push(mc('Operating systems','What kind of user interface does MS-DOS have?','Command line',['Graphical (GUI)','Touch screen','Voice control'],'You type commands in it.','MS-DOS is a command line interface. Windows added a GUI.'));
+  return G;
+}
+function buildTest(n){
+  const G = buildPool(); const keys = shuffle(Object.keys(G));
+  const lists = {}; keys.forEach(k=>{ lists[k]=shuffle(G[k]); });
+  const out=[], seen=new Set(); let i=0;
+  while(out.length<n){
+    const k = keys[i++%keys.length]; const q = lists[k].shift();
+    if(q && !seen.has(q.prompt)){ seen.add(q.prompt); out.push(q); }
+    if(keys.every(k=>!lists[k].length)) break;
+  }
+  return shuffle(out);
+}
+
+/* ---------- test engine ---------- */
+let T = null;
+function showT(id){ ['tStart','tRun','tEnd'].forEach(x=>$('#'+x).style.display = x===id?'block':'none'); }
+function bestLine(){ const b=store.get('pclab_best_test',null); $('#bestTest').textContent = b?`Best so far: ${b}%`:''; }
+bestLine();
+$('#startBtn').onclick = ()=>{
+  const n=+$('#qCount').value, mins=+$('#qTime').value;
+  T = {qs:buildTest(n),i:0,score:0,results:[],left:mins*60,sel:null,hint:false,checked:false,over:false};
+  showT('tRun'); $('#sheetBtn').style.display='block';
+  clearInterval(window._tt); window._tt=setInterval(tick,1000); tick(true); renderQ();
+};
+function tick(first){
+  if(!first) T.left--;
+  $('#sTime').textContent = fmt(T.left);
+  $('#timeBox').classList.toggle('low',T.left<=60);
+  if(T.left<=0) finish(true);
+}
+function renderQ(){
+  const q=T.qs[T.i]; T.sel=null; T.hint=false; T.checked=false;
+  $('#sQ').textContent=`${T.i+1}/${T.qs.length}`; $('#sScore').textContent=T.score;
+  $('#pBar').style.width=(T.i/T.qs.length*100)+'%';
+  $('#qTopic').textContent=q.topic; $('#qText').innerHTML=q.prompt;
+  $('#qHint').style.display='none'; $('#qFb').style.display='none';
+  $('#hintBtn').disabled=false; $('#checkBtn').textContent='Check'; $('#checkBtn').disabled=true;
+  if(q.kind==='mc'){
+    $('#qBody').innerHTML=`<div class="opts">${q.options.map((o,k)=>`<button class="opt" data-k="${k}">${o}</button>`).join('')}</div>`;
+    $('#qBody').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      if(T.checked) return;
+      $('#qBody').querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel'); T.sel=q.options[+b.dataset.k]; $('#checkBtn').disabled=false;
+    });
+  } else {
+    $('#qBody').innerHTML=`<input class="txt" id="ans" autocomplete="off" autocapitalize="words" placeholder="Type your answer">`;
+    const inp=$('#ans'); inp.oninput=()=>{T.sel=inp.value; $('#checkBtn').disabled=!inp.value.trim();};
+    inp.onkeydown=e=>{ if(e.key==='Enter' && inp.value.trim()) $('#checkBtn').click(); };
+  }
+}
+$('#hintBtn').onclick=()=>{ const q=T.qs[T.i]; T.hint=true; $('#qHint').innerHTML='💡 '+q.hint+' <span style="opacity:.7">(−½ point)</span>'; $('#qHint').style.display='block'; $('#hintBtn').disabled=true; };
+$('#checkBtn').onclick=()=>{
+  const q=T.qs[T.i];
+  if(T.checked){ T.i++; if(T.i>=T.qs.length) finish(false); else renderQ(); return; }
+  T.checked=true;
+  const ok = q.kind==='mc' ? T.sel===q.answer : q.accept.includes(norm(T.sel||''));
+  const pts = ok ? (T.hint?0.5:1) : 0; T.score+=pts;
+  T.results.push({q,given:T.sel,ok,pts});
+  if(q.kind==='mc') $('#qBody').querySelectorAll('.opt').forEach((b,k)=>{
+    const o=q.options[k]; if(o===q.answer) b.classList.add('right'); else if(o===T.sel) b.classList.add('wrong');
+  }); else $('#ans').disabled=true;
+  const fb=$('#qFb'); fb.className='fb '+(ok?'good':'bad'); fb.style.display='block';
+  fb.innerHTML=(ok?`✅ Correct! +${pts}`:`❌ Not quite. Answer: <b>${q.answer}</b>`)+`<br><span style="opacity:.85">${q.explain}</span>`;
+  $('#sScore').textContent=T.score; $('#hintBtn').disabled=true;
+  $('#checkBtn').textContent = T.i===T.qs.length-1 ? 'See results' : 'Next →';
+};
+$('#quitBtn').onclick=()=>finish(false);
+$('#againBtn').onclick=()=>{ showT('tStart'); bestLine(); };
+function finish(timeout){
+  if(T.over) return; T.over=true; clearInterval(window._tt); $('#sheetBtn').style.display='none';
+  for(let k=T.results.length;k<T.qs.length;k++) T.results.push({q:T.qs[k],given:null,ok:false,pts:0});
+  const pct=Math.round(T.score/T.qs.length*100);
+  if(pct>store.get('pclab_best_test',0)) store.set('pclab_best_test',pct);
+  $('#eScore').textContent=`${T.score} / ${T.qs.length}`;
+  $('#eMsg').innerHTML=(timeout?'⏰ Time’s up! ':'')+`${pct}% · `+(pct>=90?'Excellent, you’re ready for the exam.':pct>=70?'Good work. Review the ones you missed.':pct>=50?'Getting there. Read the notes and try again.':'Read the notes, then try a new test.');
+  $('#eReview').innerHTML=T.results.map((r,k)=>`<li><span class="${r.ok?'ok':'no'}">${r.ok?'✓':'✗'} Q${k+1}</span> · <span class="muted">${r.q.topic}</span><br>${r.q.prompt.replace(/<br>.*/,'')} ${r.q.prompt.includes('<br>')?'<span class="muted">'+r.q.prompt.split('<br>')[1]+'</span>':''}<br>Your answer: <b>${r.given==null?'(no answer)':r.given}</b>${r.ok?'':` · Correct: <b>${r.q.answer}</b>`}${r.ok&&r.pts<1?' <span class="muted">(hint used)</span>':''}</li>`).join('');
+  showT('tEnd'); window.scrollTo(0,0);
+}
+
+/* ---------- Build-a-PC game ---------- */
+const INT = {
+  psu:{n:'Power supply',i:'⚡',fit:'psu',fact:'It converts AC from the wall into DC for every part, and its fan keeps things cool.'},
+  mobo:{n:'Motherboard',i:'🟩',fit:'mobo',fact:'The largest circuit board. Every part connects through it.'},
+  cpu:{n:'CPU',i:'🔳',fit:'cpu',fact:'The processor: it interprets and executes program instructions.'},
+  ram:{n:'RAM',i:'📏',fit:'ram',fact:'Temporary memory next to the CPU. It needs power to keep its data.'},
+  gpu:{n:'Video card',i:'🎞️',fit:'exp',fact:'It will send the picture to the monitor.'},
+  snd:{n:'Sound card',i:'🎵',fit:'exp',fact:'The speakers and microphone will plug into it.'},
+  net:{n:'Network card',i:'🌐',fit:'exp',fact:'It connects the PC to the network with a cable.'},
+  hdd:{n:'Hard drive',i:'💾',fit:'bay',fact:'Magnetic storage that keeps your files.'},
+  dvd:{n:'DVD drive',i:'💿',fit:'bay',fact:'It reads CDs and music and video DVDs.'},
+  prn:{n:'Printer',i:'🖨️',decoy:'A printer is an external OUTPUT device. It stays outside the case!'},
+  scn:{n:'Scanner',i:'📠',decoy:'A scanner is an external INPUT device. It sits on the desk, not in the case!'},
+  bar:{n:'Barcode reader',i:'🏷️',decoy:'A barcode reader is an external INPUT device used at shop counters, not a part inside the case!'},
+};
+const SLOT = {
+  psu:{l:'Power supply bay',fit:'psu'}, bay1:{l:'Drive bay',fit:'bay'}, bay2:{l:'Drive bay',fit:'bay'},
+  mobo:{l:'Motherboard tray',fit:'mobo'}, cpu:{l:'CPU socket',fit:'cpu'}, ram:{l:'RAM slot',fit:'ram'},
+  exp1:{l:'Expansion slot',fit:'exp'}, exp2:{l:'Expansion slot',fit:'exp'}, exp3:{l:'Expansion slot',fit:'exp'},
+};
+const WRONG = {
+  psu:'The power supply needs its own bay where the power cord can reach it.',
+  mobo:'The motherboard is the big board everything else attaches to. Put it on the motherboard tray.',
+  cpu:'The CPU goes in the CPU socket on the motherboard.',
+  ram:'RAM goes in the RAM slot on the motherboard, near the CPU.',
+  exp:'Cards (video, sound, network) plug into the expansion slots on the motherboard.',
+  bay:'Drives slide into the drive bays.',
+};
+const EXT = {
+  pwr:{n:'Power cord',i:'🔌',port:'psu'}, mon:{n:'Monitor',i:'🖥️',port:'gpu'}, kbd:{n:'Keyboard',i:'⌨️',port:'usb'},
+  mse:{n:'Mouse',i:'🖱️',port:'usb'}, spk:{n:'Speakers',i:'🔊',port:'snd'}, mic:{n:'Microphone',i:'🎤',port:'snd'}, cab:{n:'Network cable',i:'🔗',port:'net'},
+};
+const PORT = {
+  psu:{l:'Power supply socket',cap:1,why:'The power cord plugs into the power supply.'},
+  gpu:{l:'Video card port',cap:1,why:'The monitor gets its picture from the video card.'},
+  snd:{l:'Sound card jacks',cap:2,why:'Speakers and microphones connect through the sound card.'},
+  net:{l:'Network card port',cap:1,why:'The network cable plugs into the network card.'},
+  usb:{l:'Motherboard ports',cap:2,why:'The keyboard and mouse plug into the ports on the motherboard.'},
+};
+const BOOT = [
+  'The power supply turns the wall’s AC into DC for the parts',
+  'The ROM chip (firmware) starts the computer up',
+  'The operating system is loaded from the hard drive into RAM',
+  'The CPU runs the operating system’s instructions',
+  'The video card sends the Windows desktop to the monitor',
+];
+let G = {started:false};
+function newGame(){
+  clearInterval(G.timer);
+  G = {started:true,phase:1,placed:{},conn:{psu:[],gpu:[],snd:[],net:[],usb:[]},sel:null,miss:0,sec:0,timer:null,boot:[],bootOrder:shuffle(BOOT.map((_,k)=>k)),
+       buildMiss:0,buildSec:0};
+  say('Tap a part in the tray, then tap where it goes inside the case. Watch out: not everything belongs inside!');
+  renderBuild();
+}
+function startClock(){ if(!G.timer) G.timer=setInterval(()=>{G.sec++; $('#gTime').textContent=fmt(G.sec);},1000); }
+function stopClock(){ clearInterval(G.timer); G.timer=null; }
+function say(t,cls){ const m=$('#gMsg'); m.className='msg'; void m.offsetWidth; if(cls) m.classList.add(cls); m.innerHTML=t; }
+function oops(t){ G.miss++; $('#gMiss').textContent=G.miss; say('⚠️ '+t,'bad'); }
+function setPhase(n){ document.querySelectorAll('.phase span').forEach((s,k)=>s.classList.toggle('on',k<n)); }
+const INTRO = {
+  1:['Step 1 · Install the parts','Put every internal part in the right place. The motherboard must go in before anything that sits on it.'],
+  2:['Step 2 · Connect the devices','Close the case and turn it around. Plug each outside device into the correct port.'],
+  3:['Step 3 · Power on!','Put the start-up steps in the right order to boot the computer.'],
+  4:['It works! 🎉','Your computer booted. Now try the Chapter 7 challenge and tear it down safely.'],
+  5:['Step 4 · Desktop teardown','Take the PC apart safely. Tap a part to remove it. Order matters!'],
+  6:['Teardown complete 🔧','You built it, booted it and took it apart.'],
+};
+function renderBuild(){
+  if(!G.started){ newGame(); return; }
+  const [t,i]=INTRO[G.phase]; $('#bTitle').textContent=t; $('#bIntro').textContent=i;
+  setPhase({1:1,2:2,3:3,4:3,5:4,6:4}[G.phase]);
+  $('#gTime').textContent=fmt(G.sec); $('#gMiss').textContent=G.miss;
+  const best=store.get('pclab_best_build',null); $('#gBest').textContent=best?fmt(best.t)+(best.m?` · ${best.m}✗`:''):'–';
+  const A=$('#gArea');
+  if(G.phase===1) A.innerHTML=caseHTML(false)+trayHTML();
+  if(G.phase===2) A.innerHTML=portsHTML(false)+extTrayHTML();
+  if(G.phase===3) A.innerHTML=bootHTML();
+  if(G.phase===4) A.innerHTML=doneHTML();
+  if(G.phase===5) A.innerHTML=portsHTML(true)+'<div style="height:14px"></div>'+caseHTML(true);
+  if(G.phase===6) A.innerHTML=tearDoneHTML();
+  wire();
+}
+function slotHTML(id,tear){
+  const p=G.placed[id], s=SLOT[id];
+  const target = !p && G.sel && INT[G.sel] && !tear ? ' target':'';
+  if(p) return `<div class="slot fill${tear?' rm':''}" data-slot="${id}" ${tear?`data-rm="${id}"`:''}><span class="ic">${INT[p].i}</span><b>${INT[p].n}</b></div>`;
+  return `<div class="slot${target}" data-slot="${id}"><span>${s.l}</span></div>`;
+}
+function caseHTML(tear){
+  const m=G.placed.mobo;
+  let mobo;
+  if(m){
+    mobo=`<div class="slot s-mobo fill${tear?' rm':''}" data-slot="mobo" ${tear?'data-rm="mobo"':''}><b>🟩 Motherboard</b>
+      <div class="board">${slotHTML('cpu',tear)}${slotHTML('ram',tear)}<div class="rom">🔒<b>ROM</b>firmware</div>${slotHTML('exp1',tear)}${slotHTML('exp2',tear)}${slotHTML('exp3',tear)}</div></div>`;
+  } else mobo = tear ? '<div class="slot s-mobo"><span>Empty motherboard tray</span></div>' : slotHTML('mobo').replace('class="slot','class="slot s-mobo');
+  return `<div class="case"><div style="display:grid;gap:8px">${slotHTML('psu',tear)}</div><div class="bays">${slotHTML('bay1',tear)}${slotHTML('bay2',tear)}</div>${mobo}</div>`;
+}
+function trayHTML(){
+  const used=new Set(Object.values(G.placed));
+  const parts=G.trayOrder || (G.trayOrder=shuffle(Object.keys(INT)));
+  return `<div class="tray">${parts.filter(k=>!used.has(k)).map(k=>`<button class="part${G.sel===k?' sel':''}" data-part="${k}"><span class="ic">${INT[k].i}</span>${INT[k].n}</button>`).join('')}</div>`
+   + (Object.keys(G.placed).length===9?'<div style="margin-top:14px"><button class="btn" id="nextPhase" style="width:100%">Close the case &amp; connect devices →</button></div>':'');
+}
+function portsHTML(tear){
+  return `<div class="ports">${Object.keys(PORT).map(k=>{
+    const c=G.conn[k], full=c.length>=PORT[k].cap;
+    const tgt=!tear && G.sel && EXT[G.sel] && !full?' target':'';
+    return `<div class="port${full?' full':''}${tgt}" data-port="${k}"><b style="color:var(--text)">${PORT[k].l}</b><br>${'◻ '.repeat(PORT[k].cap-c.length)}<br>${c.map(e=>`<span class="chip${tear?' rm':''}" ${tear?`data-rme="${e}"`:''}>${EXT[e].i} ${EXT[e].n}</span>`).join('')}</div>`;}).join('')}</div>`;
+}
+function extTrayHTML(){
+  const used=new Set(Object.values(G.conn).flat());
+  const left=(G.extOrder||(G.extOrder=shuffle(Object.keys(EXT)))).filter(k=>!used.has(k));
+  return `<div class="tray">${left.map(k=>`<button class="part${G.sel===k?' sel':''}" data-ext="${k}"><span class="ic">${EXT[k].i}</span>${EXT[k].n}</button>`).join('')}</div>`
+   + (!left.length?'<div style="margin-top:14px"><button class="btn" id="nextPhase" style="width:100%">Press the power button ⏻</button></div>':'');
+}
+function bootHTML(){
+  const done=G.boot.map((k,n)=>`<div class="step done"><span class="n">${n+1}</span>${BOOT[k]}</div>`).join('');
+  const left=G.bootOrder.filter(k=>!G.boot.includes(k)).map(k=>`<button class="step" data-boot="${k}">${BOOT[k]}</button>`).join('');
+  return `<div class="boot">${done}${left?'<p class="muted" style="margin:6px 0 0">What happens next?</p>'+left:''}</div>`;
+}
+function stars(m){ return m<=1?'★★★':m<=4?'★★☆':'★☆☆'; }
+function doneHTML(){
+  return `<div class="screen"><div style="font-size:13px;opacity:.85">Operating system loaded</div><div style="font-size:24px;font-weight:800;margin:6px 0">Desktop ready ✓</div>
+   <div class="stars">${stars(G.buildMiss)}</div><div style="font-size:14px">Built in ${fmt(G.buildSec)} · ${G.buildMiss} mistake${G.buildMiss===1?'':'s'}</div></div><div class="stand"></div>
+   <div class="actions"><button class="btn warn" id="tearBtn">🔧 Tear it down</button><button class="btn alt" id="againBuild">Build again</button></div>`;
+}
+function tearDoneHTML(){
+  const tm=G.miss-G.buildMiss, ts=G.sec-G.buildSec;
+  return `<div class="card" style="text-align:center"><div class="stars" style="font-size:34px;color:var(--warn)">${stars(tm)}</div>
+   <p>Teardown in <b>${fmt(ts)}</b> with <b>${tm}</b> mistake${tm===1?'':'s'}.</p>
+   <p class="muted" style="font-size:14px">Safety order: unplug the power cord → disconnect the outside devices → remove the cards, RAM and CPU → drives and power supply → motherboard last.</p>
+   <button class="btn" id="againBuild" style="width:100%">Build another PC</button></div>`;
+}
+function wire(){
+  const A=$('#gArea');
+  A.querySelectorAll('[data-part]').forEach(b=>b.onclick=()=>{ startClock(); G.sel=G.sel===b.dataset.part?null:b.dataset.part; if(G.sel) say(`${INT[G.sel].i} <b>${INT[G.sel].n}</b> picked up. Now tap where it goes.`); renderBuild(); });
+  A.querySelectorAll('[data-ext]').forEach(b=>b.onclick=()=>{ startClock(); G.sel=G.sel===b.dataset.ext?null:b.dataset.ext; if(G.sel) say(`${EXT[G.sel].i} <b>${EXT[G.sel].n}</b> picked up. Which port does it plug into?`); renderBuild(); });
+  if(G.phase===1) A.querySelectorAll('[data-slot]').forEach(s=>s.onclick=e=>{ e.stopPropagation(); place(s.dataset.slot); });
+  if(G.phase===2) A.querySelectorAll('[data-port]').forEach(p=>p.onclick=()=>plug(p.dataset.port));
+  A.querySelectorAll('[data-boot]').forEach(b=>b.onclick=()=>bootStep(+b.dataset.boot));
+  if(G.phase===5){
+    A.querySelectorAll('[data-rme]').forEach(c=>c.onclick=e=>{e.stopPropagation(); removeExt(c.dataset.rme);});
+    A.querySelectorAll('[data-rm]').forEach(c=>c.onclick=e=>{e.stopPropagation(); removeInt(c.dataset.rm);});
+  }
+  const np=$('#nextPhase'); if(np) np.onclick=()=>{ G.sel=null; G.phase++; say(G.phase===2?'Case closed! Now plug in the outside devices. Each one belongs to a specific port.':'Put the start-up steps in order. Tap the step that happens first.'); renderBuild(); };
+  const tb=$('#tearBtn'); if(tb) tb.onclick=()=>{ G.phase=5; G.powered=true; say('The PC is still plugged in and running. Tap parts to remove them, starting with the safest first move.'); startClock(); renderBuild(); };
+  const ab=$('#againBuild'); if(ab) ab.onclick=newGame;
+}
+function place(slotId){
+  if(!G.sel){ say('Pick a part from the tray first.'); return; }
+  const part=INT[G.sel], s=SLOT[slotId];
+  if(part.decoy){ oops(part.decoy); G.sel=null; renderBuild(); $('#gMsg').classList.add('bad'); return; }
+  if(G.placed[slotId]){ say('That spot is already used. Try another one.'); return; }
+  if(part.fit!==s.fit){
+    let t=`The ${part.n} doesn’t go in the ${s.l.toLowerCase()}. `+WRONG[part.fit];
+    if(slotId==='mobo' && ['cpu','ram','exp'].includes(part.fit)) t=`The ${part.n} sits <i>on</i> the motherboard, so install the motherboard first!`;
+    oops(t); return;
+  }
+  G.placed[slotId]=G.sel; G.sel=null;
+  const n=Object.keys(G.placed).length;
+  say(`✅ ${part.i} <b>${part.n}</b> installed. ${part.fact}`+(n===9?'<br><b>All 9 parts are in!</b> Leave the printer, scanner and barcode reader outside.':''),'good');
+  renderBuild();
+}
+function plug(portId){
+  if(!G.sel){ say('Pick a device from the tray first.'); return; }
+  const d=EXT[G.sel];
+  if(G.conn[portId].length>=PORT[portId].cap){ say('That port is full.'); return; }
+  if(d.port!==portId){ oops(`The ${d.n.toLowerCase()} doesn’t plug into the ${PORT[portId].l.toLowerCase()}. ${PORT[d.port].why}`); return; }
+  G.conn[portId].push(G.sel); G.sel=null;
+  say(`✅ ${d.i} <b>${d.n}</b> connected. ${PORT[portId].why}`,'good'); renderBuild();
+}
+function bootStep(k){
+  const next=G.boot.length;
+  if(k!==next){ oops('Not yet! Think it through: power first → firmware starts things → the OS goes into memory → the CPU runs it → a picture appears.'); return; }
+  G.boot.push(k);
+  if(G.boot.length===BOOT.length){
+    stopClock(); G.buildMiss=G.miss; G.buildSec=G.sec; G.phase=4;
+    const best=store.get('pclab_best_build',null);
+    if(!best || G.sec<best.t) store.set('pclab_best_build',{t:G.sec,m:G.miss});
+    say('🎉 Beep! The computer booted successfully.','good');
+  } else say(`✅ Step ${next+1} done.`,'good');
+  renderBuild();
+}
+function extLeft(){ return Object.values(G.conn).flat().length; }
+function removeExt(id){
+  if(G.powered && id!=='pwr'){ oops('Safety first! Always unplug the power cord before you disconnect or touch anything else.'); return; }
+  for(const k in G.conn) G.conn[k]=G.conn[k].filter(x=>x!==id);
+  if(id==='pwr'){ G.powered=false; say('✅ Power cord unplugged. Now it’s safe. Disconnect the other devices.','good'); }
+  else say(`✅ ${EXT[id].n} disconnected.`,'good');
+  checkTear(); renderBuild();
+}
+function removeInt(slotId){
+  if(G.powered){ oops('Never open a computer while it’s plugged in! Unplug the power cord first.'); return; }
+  if(extLeft()){ oops('Disconnect all the outside devices before you open the case.'); return; }
+  if(slotId==='mobo' && ['cpu','ram','exp1','exp2','exp3'].some(s=>G.placed[s])){ oops('The CPU, RAM and cards are still mounted on the motherboard. Remove them first.'); return; }
+  const p=G.placed[slotId]; delete G.placed[slotId];
+  say(`✅ ${INT[p].n} removed.`,'good'); checkTear(); renderBuild();
+}
+function checkTear(){
+  if(!extLeft() && !Object.keys(G.placed).length){ stopClock(); G.phase=6; say('🔧 Teardown complete. Every part is out safely!','good'); }
+}
+</script>
+</body>
+</html>
